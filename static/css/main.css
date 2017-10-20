@@ -4,11 +4,7 @@ body {
 	background-repeat: no-repeat;
 	background-color: #AA0000;
 	color: #302418;
-<<<<<<< HEAD
 	font-family: 'Oldenburg', cursive;
-=======
-	font-family: 'Walter Turncoat', cursive;
->>>>>>> af3bfae7d9e7c5311dd27dccf3aa594b62cf1c47
 	width: 75vw;
 	margin: auto;
 	perspective: 1000px;
@@ -116,11 +112,7 @@ body {
 	float: right;
 	width: 74%;
 	overflow: auto;
-<<<<<<< HEAD
 	height: 60vh;
-=======
-	height: 59vh;
->>>>>>> af3bfae7d9e7c5311dd27dccf3aa594b62cf1c47
 	position: relative;
 	padding-left: 1vw;
 }
@@ -325,7 +317,7 @@ input.found {
 }
 
 .clickable {
-	background-image: url("/static/img/light_underline.png");
+	background-image: url("/static/img/pencil.png");
 	background-repeat: no-repeat;
 	background-position: center bottom;
 	background-size: 100%;
@@ -337,8 +329,9 @@ input.found {
 }
 
 .clickable:hover {
-	background-image: url("/static/img/light_underline_high.png");
-	color: #293c56;
+	background-image: url("/static/img/pencil_l.png");
+	background-size: 100% 100%;
+	color: #FFFFC1;
 	font-weight: 200;
 }
 
@@ -522,7 +515,7 @@ li.skill {
 	padding-right: 3%;
 	height: 100%;
 	z-index: 150;
-	width: 84%;
+	width: 85%;
 	left: 4%
 }
 

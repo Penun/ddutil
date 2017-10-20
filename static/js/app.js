@@ -33,18 +33,7 @@
 		};
 
 		this.SortList = function(list, varName, colC){
-			if (this.lastSort != colC + "_" + "d"){
-				for (var i = 0; i < list.length; i++){
-					var minInd = i;
-					for (j = i; j < list.length; ++j){
-						if (list[j][varName] > list[minInd][varName]){
-							minInd = j;
-						}
-					}
-					[list[i], list[minInd]] = [list[minInd], list[i]];
-				}
-				this.lastSort = colC + "_" + "d";
-			} else {
+			if (this.lastSort != colC + "_" + "a"){
 				for (var i = 0; i < list.length; i++){
 					var minInd = i;
 					for (j = i; j < list.length; ++j){
@@ -55,6 +44,17 @@
 					[list[i], list[minInd]] = [list[minInd], list[i]];
 				}
 				this.lastSort = colC + "_" + "a";
+			} else {
+				for (var i = 0; i < list.length; i++){
+					var minInd = i;
+					for (j = i; j < list.length; ++j){
+						if (list[j][varName] > list[minInd][varName]){
+							minInd = j;
+						}
+					}
+					[list[i], list[minInd]] = [list[minInd], list[i]];
+				}
+				this.lastSort = colC + "_" + "d";
 			}
 		};
 	}]);

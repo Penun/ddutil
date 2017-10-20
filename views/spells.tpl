@@ -23,10 +23,8 @@
                 <div class="talentPanel fade_nu" id="popPanel">
                     <h1>{{"{{curSpell.name}}"}}</h1><button type="button" ng-click="mCont.CloseSpell()" style="font-size: 0.5em; position: absolute; right: 25px;">X</button>
                     <div class="characterBlock"><b>School:</b> {{"{{curSpell.school}}"}}</div>
-                    <div class="characterBlock">
-                        <span ng-if="spell.level == 0">Cantrip</span>
-                        <span ng-if="spell.level == 0"><b>Level:</b> {{"{{curSpell.level}}"}}</span>
-                    </div>
+                    <div class="characterBlock" ng-if="curSpell.level == 0"><b>Level:</b> Cantrip</div>
+                    <div class="characterBlock" ng-if="curSpell.level != 0"><b>Level:</b> {{"{{curSpell.level}}"}}</div>
                     <div class="characterBlock"><b>Casting Time:</b> {{"{{curSpell.casting_time}}"}}</div>
                     <div class="characterBlock"><b>Range:</b> {{"{{curSpell.range}}"}}</div>
                     <div class="characterBlock"><b>Components:</b> {{"{{curSpell.components}}"}}</div>
