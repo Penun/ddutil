@@ -4,7 +4,7 @@ body {
 	background-repeat: no-repeat;
 	background-color: #AA0000;
 	color: #302418;
-	font-family: 'Walter Turncoat', cursive;
+	font-family: 'Oldenburg', cursive;
 	width: 75vw;
 	margin: auto;
 	perspective: 1000px;
@@ -24,8 +24,8 @@ body {
 	background-repeat: no-repeat;
 }
 
-.sw_back_s {
-	background-image: url("/static/img/sw_back_s.png");
+.popBox {
+	background-image: url("/static/img/popBox.png");
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 }
@@ -92,7 +92,7 @@ body {
 .left_page_col {
 	position: absolute;
 	width: 25%;
-	height: 59vh;
+	height: 60vh;
 }
 
 .mid_col {
@@ -112,7 +112,7 @@ body {
 	float: right;
 	width: 74%;
 	overflow: auto;
-	height: 59vh;
+	height: 60vh;
 	position: relative;
 	padding-left: 1vw;
 }
@@ -278,7 +278,7 @@ input, textarea, select {
 	border: none;
 	text-align: center;
 	font-size: 1.25em;
-	font-family: 'Walter Turncoat', cursive;
+	font-family: 'Oldenburg', cursive;
 
 }
 
@@ -514,7 +514,8 @@ li.skill {
 	padding-right: 3%;
 	height: 100%;
 	z-index: 150;
-	width: 94%;
+	width: 84%;
+	left: 4%
 }
 
 .talentPanel {
@@ -584,7 +585,7 @@ div.vConn {
 }
 
 .tablePage {
-	height: 75vh;
+	height: 60vh;
 	font-size: 1.35em;
 	overflow: auto;
 }
@@ -601,17 +602,17 @@ table {
 }
 
 tr {
-	background-image: url("/static/img/light_underline.png");
-	background-size: 105% 20%;
+	background-image: url("/static/img/pencil.png");
+	background-size: 120% 20%;
 	background-repeat: no-repeat;
 	background-position: bottom center;
 	cursor: pointer;
 }
 
 tr.item:hover {
-	background-image: url("/static/img/light_underline_high.png");
+	background-image: url("/static/img/pencil_l.png");
 	background-size: 100% 100%;
-	color: #293c56;
+	color: #FFFFC1;
 	font-weight: 200;
 }
 
