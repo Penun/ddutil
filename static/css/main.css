@@ -3,8 +3,8 @@ body {
 	background-size: 100%;
 	background-repeat: no-repeat;
 	background-color: #AA0000;
-	color: #a4dde5;
-	font-family: 'Share Tech Mono', monospace;
+	color: #302418;
+	font-family: 'Walter Turncoat', cursive;
 	width: 75vw;
 	margin: auto;
 	perspective: 1000px;
@@ -34,10 +34,6 @@ body {
 	padding: 1%;
     position: relative;
     height: 50px;
-}
-
-.left_page {
-	position: relative;
 }
 
 @keyframes fade_in {
@@ -96,6 +92,7 @@ body {
 .left_page_col {
 	position: absolute;
 	width: 25%;
+	height: 59vh;
 }
 
 .mid_col {
@@ -115,7 +112,7 @@ body {
 	float: right;
 	width: 74%;
 	overflow: auto;
-	height: 73vh;
+	height: 59vh;
 	position: relative;
 	padding-left: 1vw;
 }
@@ -170,16 +167,16 @@ body {
 }
 
 .sixty_he{
-    margin-top: 3vh;
-    float: left;
-    width: 100%;
+    margin-top: 10vh;
+	margin-left: 16.5%;
+	float: left;
+    width: 72%;
     position: relative;
 }
 
 .innerList {
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: 68vh;
 }
 
 h2 {
@@ -269,19 +266,20 @@ option[label]{
 }
 
 .sing_select option[label]{
-	background-color: #172836;
+	background-color: #faffc2;
 }
 
 .sing_select {
-	background-color: #172836;
+	background-color: #faffc2;
 }
 
 input, textarea, select {
 	background: transparent;
-	color: #a4dde5;
 	border: none;
 	text-align: center;
-	font-size: 1em;
+	font-size: 1.25em;
+	font-family: 'Walter Turncoat', cursive;
+
 }
 
 select {
@@ -346,8 +344,10 @@ input.found {
 
 button {
 	float: right;
-	background-color: rgba(84, 123, 168, 0.35);
-	color: #a4dde5;
+	background-image: url("/static/img/plug.png");
+	background-size: 120% 120%;
+	background-position: center;
+	color: #302418;
 	display: inline-block;
   	padding: 10px 15px;
   	font-size: 1em;
@@ -355,24 +355,21 @@ button {
   	text-align: center;
   	text-decoration: none;
 	border-width: 3px;
-	border-color: #c0eaf1;
-	border-style: double;
+	border-color: #302418;
+	border-style: hidden;
 	outline: none;
   	border-radius: 35px;
-  	box-shadow: 0px 0px 10px 5px #547ba8;
+  	box-shadow: 0px 0px 10px 5px #e96a2b;
 	margin-top: 5px;
 	z-index: 450;
 }
 
 button:hover {
-	background-color: rgba(84, 123, 168, 0.65);
-	box-shadow: 0px 0px 20px 10px #547ba8;
+	box-shadow: 0px 0px 20px 10px #c58558;
 }
 
 button:active {
-	background-color: rgba(192, 234, 241, 0.5);
-	color: #83d9e6;
-	box-shadow: 0px 0px 25px 15px rgba(192, 234, 241, 0.75);
+	box-shadow: 0px 0px 25px 15px #ffb883;
 	transform: scale(0.9, 0.9);
 }
 
