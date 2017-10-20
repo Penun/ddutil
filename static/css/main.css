@@ -4,7 +4,11 @@ body {
 	background-repeat: no-repeat;
 	background-color: #AA0000;
 	color: #302418;
+<<<<<<< HEAD
 	font-family: 'Oldenburg', cursive;
+=======
+	font-family: 'Walter Turncoat', cursive;
+>>>>>>> af3bfae7d9e7c5311dd27dccf3aa594b62cf1c47
 	width: 75vw;
 	margin: auto;
 	perspective: 1000px;
@@ -112,7 +116,11 @@ body {
 	float: right;
 	width: 74%;
 	overflow: auto;
+<<<<<<< HEAD
 	height: 60vh;
+=======
+	height: 59vh;
+>>>>>>> af3bfae7d9e7c5311dd27dccf3aa594b62cf1c47
 	position: relative;
 	padding-left: 1vw;
 }
