@@ -1,6 +1,6 @@
 (function(){
 	var app = angular.module('ddcharL', ['ngSanitize']);
-	app.controller('mainController', ['$window', '$scope', '$http', function($window, $scope, $http){
+	app.controller('mainController', ['$scope', '$http', function($scope, $http){
 		this.curTab = 1;
 		$scope.spells = [];
 		this.rotateDeg = 29;

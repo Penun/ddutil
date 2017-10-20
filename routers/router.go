@@ -7,4 +7,7 @@ import (
 
 func init() {
     beego.Router("/", &controllers.MainController{})
+    beego.Router("/edit", &controllers.EditController{})
+    beego.Router("/spells", &controllers.SpellsController{})
+    beego.Router("/spells/add", &controllers.SpellsController{}, "post:Add")
 }
