@@ -1,5 +1,5 @@
 <div ng-show="mCont.ShowTab(1)" class="sixty_he">
-    <div class="left_page_col left_page">
+    <div class="left_page_col">
         <div class="fade_in" style="width: 95%">
             <h2>Spells</h2>
             <div class="innerList">
@@ -38,6 +38,7 @@
                 <option value="8">8</option>
                 <option value="9">9</option>
             </select></p>
+            <p><label><b>Ritual:</b></label> <input type="checkbox" name="spelRit" ng-model="moldSpell.ritual" /></p>
             <p><label><b>Casting Time:</b></label> <input type="text" name="spelCas" ng-model="moldSpell.casting_time" required/></p>
             <p><label><b>Range:</b></label> <input type="text" name="spelRan" ng-model="moldSpell.range" required/></p>
             <p><label><b>Components:</b></label> <input type="text" name="spelComp" ng-model="moldSpell.components" required/></p>

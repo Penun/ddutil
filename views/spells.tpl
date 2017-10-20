@@ -19,12 +19,13 @@
                     <td class="rang">{{"{{spell.range}}"}}</td>
                 </tr>
             </table>
-            <div class="popBox talentPanelOut" ng-show="curSpell != null">
-                <div class="talentPanel fade_nu" id="popPanel">
+            <div class="popBox talentPanelOut fade_nu" id="popPanel" ng-show="curSpell != null">
+                <div class="talentPanel">
                     <h1>{{"{{curSpell.name}}"}}</h1><button type="button" ng-click="mCont.CloseSpell()" style="font-size: 0.5em; position: absolute; right: 25px;">X</button>
                     <div class="characterBlock"><b>School:</b> {{"{{curSpell.school}}"}}</div>
                     <div class="characterBlock" ng-if="curSpell.level == 0"><b>Level:</b> Cantrip</div>
                     <div class="characterBlock" ng-if="curSpell.level != 0"><b>Level:</b> {{"{{curSpell.level}}"}}</div>
+                    <div class="characterBlock" ng-if="curSpell.ritual"><b><i>(Ritual)</i></b></div>
                     <div class="characterBlock"><b>Casting Time:</b> {{"{{curSpell.casting_time}}"}}</div>
                     <div class="characterBlock"><b>Range:</b> {{"{{curSpell.range}}"}}</div>
                     <div class="characterBlock"><b>Components:</b> {{"{{curSpell.components}}"}}</div>

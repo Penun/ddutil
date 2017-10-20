@@ -14,6 +14,7 @@ type Spell struct {
     Components string `json:"components"`
     Duration string `json:"duration"`
     Description string `json:"description"`
+    Ritual bool `json:"ritual"`
 }
 
 func init() {
