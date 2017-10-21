@@ -3,6 +3,7 @@
 	app.controller('mainController', ['$scope', '$http', function($scope, $http){
 		this.curTab = 1;
 		this.rotateDeg = 29;
+		this.curPlays = [];
 
 		angular.element(document).ready(function(){
 			$http.get("/spells").then(function(ret){
@@ -22,6 +23,18 @@
 		this.CloseSpell = function(){
 			$scope.curSpell = null;
 			angular.element(document.querySelector("#popPanel")).toggleClass("fade_in fade_nu");
+		};
+
+		this.AddPlay = function(){
+			this.curPlays.push(this.moldPlay);
+			this.moldPlay = {};
+			document.querySelector("#initName").focus();
+			this.lastSort = "___a";
+			this.SortList(this.curPlays, "initiative", "__");
+		};
+
+		this.DelPlay = function(index){
+			this.curPlays.splice(index, 1);
 		};
 
 		this.LoadTab = function(newTab){

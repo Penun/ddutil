@@ -127,7 +127,7 @@ li {
 
 span {
 	width: 100%;
-	display: inline;
+	display: inline-block;
 }
 
 p {
@@ -334,4 +334,22 @@ td.rang {
 
 td.table_name {
 	font-size: 1.25em;
+}
+
+.sideNav {
+	position: absolute;
+	height: 30vh;
+	width: 50px;
+	left: 9vw;
+	top: 8vh;
+}
+
+.sideNav > span {
+	padding-top: 1vh;
+	cursor: pointer;
+}
+
+.sideNav > span:hover {
+	background-image: url("/static/img/pencil_l.png");
+	background-size: 100% 100%;
 }
