@@ -10,5 +10,6 @@
 			{{template "initiative.tpl"}}
 		</div>
 	</div>
+	<div id="divFloat_{{"{{ind}}"}}" class="rise_{{"{{bub.rise}}"}} sc_back bubble" ng-repeat="(ind, bub) in bubs"  ng-style="{'left': bub.left+'%', 'bottom': startBottom}"></div>
 </body>
 </html>

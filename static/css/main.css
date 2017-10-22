@@ -13,6 +13,78 @@
 	100% { opacity: 1; }
 }
 
+@keyframes rise_1 {
+	0% { bottom: 0; }
+	25% { bottom: 20%; }
+	50% { bottom: 55%; }
+	75% { bottom: 75%; }
+	100% { bottom: 100%; }
+}
+
+@-webkit-keyframes rise_1 {
+	0% { bottom: 0; }
+	25% { bottom: 20%; }
+	50% { bottom: 55%; }
+	75% { bottom: 75%; }
+	100% { bottom: 100%; }
+}
+
+@-moz-keyframes rise_1 {
+	0% { bottom: 0; }
+	25% { bottom: 20%; }
+	50% { bottom: 55%; }
+	75% { bottom: 75%; }
+	100% { bottom: 100%; }
+}
+
+@keyframes rise_2 {
+	0% { bottom: 0; }
+	25% { bottom: 25%; }
+	50% { bottom: 45%; }
+	75% { bottom: 80%; }
+	100% { bottom: 100%; }
+}
+
+@-webkit-keyframes rise_2 {
+	0% { bottom: 0; }
+	25% { bottom: 25%; }
+	50% { bottom: 45%; }
+	75% { bottom: 80%; }
+	100% { bottom: 100%; }
+}
+
+@-moz-keyframes rise_2 {
+	0% { bottom: 0; }
+	25% { bottom: 25%; }
+	50% { bottom: 45%; }
+	75% { bottom: 80%; }
+	100% { bottom: 100%; }
+}
+
+@keyframes rise_0 {
+	0% { bottom: 0; }
+	25% { bottom: 30%; }
+	50% { bottom: 50%; }
+	75% { bottom: 70%; }
+	100% { bottom: 100%; }
+}
+
+@-webkit-keyframes rise_0 {
+	0% { bottom: 0; }
+	25% { bottom: 30%; }
+	50% { bottom: 50%; }
+	75% { bottom: 70%; }
+	100% { bottom: 100%; }
+}
+
+@-moz-keyframes rise_0 {
+	0% { bottom: 0; }
+	25% { bottom: 30%; }
+	50% { bottom: 50%; }
+	75% { bottom: 70%; }
+	100% { bottom: 100%; }
+}
+
 .fade_in {
 	animation-name: fade_in;
 	animation-duration: 750ms;
@@ -20,6 +92,27 @@
 	-webkit-animation-duration: 750ms;
 	-moz-animation-name: fade_in;
 	-moz-animation-duration: 750ms;
+}
+
+.rise_1 {
+	animation-name: rise_1;
+	-webkit-animation-name: rise_1;
+	animation-duration: 3000ms;
+	-webkit-animation-duration: 3000ms;
+}
+
+.rise_2 {
+	animation-name: rise_2;
+	-webkit-animation-name: rise_2;
+	animation-duration: 9000ms;
+	-webkit-animation-duration: 9000ms;
+}
+
+.rise_0 {
+	animation-name: rise_0;
+	-webkit-animation-name: rise_0;
+	animation-duration: 6000ms;
+	-webkit-animation-duration: 6000ms;
 }
 
 .fade_nu {
@@ -31,6 +124,7 @@ body {
 	background-size: 100%;
 	background-repeat: no-repeat;
 	background-color: #AA0000;
+	background-position: center;
 	color: #302418;
 	font-family: 'Oldenburg', cursive;
 	width: 75vw;
@@ -68,6 +162,7 @@ body {
 	position: absolute;
 	width: 33%;
 	height: 60vh;
+	overflow-y: auto;
 }
 
 .right_page {
@@ -352,4 +447,10 @@ td.table_name {
 .sideNav > span:hover {
 	background-image: url("/static/img/pencil_l.png");
 	background-size: 100% 100%;
+}
+
+.bubble {
+	position: absolute;
+	width: 30px;
+	height: 30px;
 }
