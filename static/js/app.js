@@ -1,6 +1,6 @@
 (function(){
 	var app = angular.module('ddcharL', ['ngSanitize']);
-	app.controller('mainController', ['$scope', '$http', '$interval', '$document', function($scope, $http, $interval, $document){
+	app.controller('mainController', ['$scope', '$http', '$timeout', '$document', function($scope, $http, $timeout, $document){
 		this.curTab = 1;
 		this.rotateDeg = 29;
 		this.curPlays = [];
@@ -15,32 +15,38 @@
 					$scope.spells = [];
 				}
 			});
-			// var divFlo = document.querySelector("#divFloat");
-			// divFlo.addEventListener('webkitAnimationEnd', function(event){
-			// 	var divFlo = angular.element(event.target);
-			// 	if (divFlo.hasClass("rise_1")){
-			// 		divFlo.removeClass("rise_1");
-			// 	}
-			// }, true);
-			// charCol.addEventListener('animationend', function(event){
-			// 	var charCol = angular.element(event.target);
-			// 	if (charCol.hasClass("fade_out")){
-			// 		charCol.removeClass("fade_out");
-			// 		charCol.removeClass("fade_in");
-			// 		charCol.addClass("fade_nu");
-			// 	}
-			// }, true);
-			$scope.goose = $interval(function(){
-				var stLeft = Math.floor(Math.random() * 900) / 10 + 10;
-				var raRise = Math.floor(Math.random() * 3);
-				var stop = $interval(function(){
-
-				}, 100);
-				$scope.bubs.push({
-					left: stLeft,
-					rise: raRise
-				})
-			}, 1500);
+			var aura = document.querySelector("#aura");
+			aura.addEventListener('webkitAnimationEnd', function(event){
+				var aura = angular.element(event.target);
+				aura.toggleClass("aura_hUp");
+				aura.toggleClass("aura_hDn");
+				var aura_prom = $timeout(function(){
+					aura = angular.element(document.querySelector('#aura'));
+					aura.toggleClass("aura_exp");
+					aura.toggleClass("aura_con");
+				}, 10000);
+			}, true);
+			aura.addEventListener('animationend', function(event){
+				var aura = angular.element(event.target);
+				aura.toggleClass("aura_hUp");
+				aura.toggleClass("aura_hDn");
+				var aura_prom = $timeout(function(){
+					aura = angular.element(document.querySelector('#aura'));
+					aura.toggleClass("aura_exp");
+					aura.toggleClass("aura_con");
+				}, 10000);
+			}, true);
+			// $scope.goose = $interval(function(){
+			// 	var stLeft = Math.floor(Math.random() * 900) / 10 + 10;
+			// 	var raRise = Math.floor(Math.random() * 3);
+			// 	var stop = $interval(function(){
+			//
+			// 	}, 100);
+			// 	$scope.bubs.push({
+			// 		left: stLeft,
+			// 		rise: raRise
+			// 	})
+			// }, 1500);
 			var bod = window.innerHeight - $document[0].body.clientHeight + 30;
 			if (bod > 0){
 				$scope.startBottom = "-" + bod + "px";

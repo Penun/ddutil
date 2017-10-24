@@ -85,46 +85,193 @@
 	100% { bottom: 100%; }
 }
 
+@keyframes aura_exp {
+	0% {
+		height: 90%;
+		width: 90%;
+		top: 5%;
+		left: 5%;
+	}
+	100% {
+		height: 150%;
+		width: 200%;
+		top: -25%;
+		left: -50%;
+	}
+}
+
+@-webkit-keyframes aura_exp {
+	0% {
+		height: 90%;
+		width: 90%;
+		top: 5%;
+		left: 5%;
+	}
+	100% {
+		height: 150%;
+		width: 200%;
+		top: -25%;
+		left: -50%;
+	}
+}
+
+@-moz-keyframes aura_exp {
+	0% {
+		height: 90%;
+		width: 90%;
+		top: 5%;
+		left: 5%;
+	}
+	100% {
+		height: 150%;
+		width: 200%;
+		top: -25%;
+		left: -50%;
+	}
+}
+
+@keyframes aura_con {
+	0% {
+		height: 150%;
+		width: 200%;
+		left: -50%;
+		top: -25%;
+	}
+	100% {
+		height: 90%;
+		width: 90%;
+		left: 5%;
+		top: 5%;
+	}
+}
+
+@-webkit-keyframes aura_con {
+	0% {
+		height: 150%;
+		width: 200%;
+		left: -50%;
+		top: -25%;
+	}
+	100% {
+		height: 90%;
+		width: 90%;
+		left: 5%;
+		top: 5%;
+	}
+}
+
+@-moz-keyframes aura_con {
+	0% {
+		height: 150%;
+		width: 200%;
+		left: -50%;
+		top: -25%;
+	}
+	100% {
+		height: 90%;
+		width: 90%;
+		left: 5%;
+		top: 5%;
+	}
+}
+
+@keyframes bFloat {
+	0% {
+		background-position-y: 0%;
+	}
+	100% {
+		background-position-y: -100vh;
+	}
+}
+
+@-webkit-keyframes bFloat {
+	0% {
+		background-position-y: 0%;
+	}
+	100% {
+		background-position-y: -100vh;
+	}
+}
+
+@-moz-keyframes bFloat {
+	0% {
+		background-position-y: 0%;
+	}
+	100% {
+		background-position-y: -100vh;
+	}
+}
+
 .fade_in {
 	animation-name: fade_in;
-	animation-duration: 750ms;
 	-webkit-animation-name: fade_in;
-	-webkit-animation-duration: 750ms;
 	-moz-animation-name: fade_in;
-	-moz-animation-duration: 750ms;
+	animation-duration: 500ms;
+	-webkit-animation-duration: 500ms;
+	-moz-animation-duration: 500ms;
 }
 
 .rise_1 {
 	animation-name: rise_1;
 	-webkit-animation-name: rise_1;
+	-moz-animation-name: rise_1;
 	animation-duration: 3000ms;
 	-webkit-animation-duration: 3000ms;
+	-moz-animation-duration: 3000ms;
 }
 
 .rise_2 {
 	animation-name: rise_2;
 	-webkit-animation-name: rise_2;
+	-moz-animation-name: rise_2;
 	animation-duration: 9000ms;
 	-webkit-animation-duration: 9000ms;
+	-moz-animation-duration: 9000ms;
 }
 
 .rise_0 {
 	animation-name: rise_0;
 	-webkit-animation-name: rise_0;
+	-moz-animation-name: rise_0;
 	animation-duration: 6000ms;
 	-webkit-animation-duration: 6000ms;
+	-moz-animation-duration: 6000ms;
 }
 
 .fade_nu {
 	display: none;
 }
 
+.aura_exp {
+	animation-name: aura_exp;
+	-webkit-animation-name: aura_exp;
+	-moz-animation-name: aura_exp;
+	animation-duration: 25s;
+	-webkit-animation-duration: 25s;
+	-moz-animation-duration: 25s;
+}
+
+.aura_con {
+	animation-name: aura_con;
+	-webkit-animation-name: aura_con;
+	-moz-animation-name: aura_con;
+	animation-duration: 15s;
+	-webkit-animation-duration: 15s;
+	-moz-animation-duration: 15s;
+}
+
 body {
-	background-image: url("/static/img/light.png");
-	background-size: 100%;
-	background-repeat: no-repeat;
-	background-color: #AA0000;
-	background-position: center;
+	background-image: url("/static/img/sparks.png");
+	background-size: 100% 100%;
+	background-repeat: repeat;
+	background-position-x: center;
+	background-color: #000000;
+	animation-name: bFloat;
+	-webkit-animation-name: bFloat;
+	animation-duration: 120s;
+	-webkit-animation-duration: 120s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
 	color: #302418;
 	font-family: 'Oldenburg', cursive;
 	width: 75vw;
@@ -133,10 +280,34 @@ body {
 	-moz-perspective: 1000px;
 	-webkit-perspective: 1000px;
 	overflow: hidden;
+	height: 100vh;
 }
 
 .mainDiv {
 	position: relative;
+}
+
+.aura {
+	background: -webkit-radial-gradient(circle, #fcfe6e 10%, rgba(255, 90, 30, .75) 35%, rgba(0, 0, 0, 0) 55%);
+	background: -o-radial-gradient(circle, #fcfe6e 10%, rgba(255, 90, 30, .75) 35%, rgba(0, 0, 0, 0) 55%);
+	background: -moz-radial-gradient(circle, #fcfe6e 10%, rgba(255, 90, 30, .75) 35%, rgba(0, 0, 0, 0) 55%);
+	background: radial-gradient(circle, #fcfe6e 10%, rgba(255, 90, 30, .75) 35%, rgba(0, 0, 0, 0) 55%);
+	position: absolute;
+	z-index: -100;
+}
+
+.aura_hUp {
+	top: -25%;
+	left: -50%;
+	width: 200%;
+	height: 150%;
+}
+
+.aura_hDn {
+	top: 5%;
+	left: 5%;
+	width: 90%;
+	height: 90%;
 }
 
 .sc_back {
@@ -148,7 +319,8 @@ body {
 .page {
 	z-index: 0;
 	height: 90vh;
-	padding-left: 2vw;
+	width: 71vw;
+	padding-left: 1vw;
 	padding-right: 2vw;
 }
 
@@ -434,7 +606,7 @@ td.table_name {
 .sideNav {
 	position: absolute;
 	height: 30vh;
-	width: 50px;
+	width: 2.5%;
 	left: 9vw;
 	top: 8vh;
 }
@@ -445,8 +617,12 @@ td.table_name {
 }
 
 .sideNav > span:hover {
-	background-image: url("/static/img/pencil_l.png");
-	background-size: 100% 100%;
+	background: -webkit-radial-gradient(#FFFFFF 10%, rgba(255, 130, 75, .9) 35%, rgba(0, 0, 0, 0) 70%);
+	background: -o-radial-gradient(#FFFFFF 10%, rgba(255, 130, 75, .9) 35%, rgba(0, 0, 0, 0) 70%);
+	background: -moz-radial-gradient(#FFFFFF 10%, rgba(255, 130, 75, .9) 35%, rgba(0, 0, 0, 0) 70%);
+	background: radial-gradient(#FFFFFF 10%, rgba(255, 130, 75, .9) 35%, rgba(0, 0, 0, 0) 70%);
+	background-position: center;
+	background-size: 150% 150%;
 }
 
 .bubble {
