@@ -24,7 +24,7 @@
 					aura = angular.element(document.querySelector('#aura'));
 					aura.toggleClass("aura_exp");
 					aura.toggleClass("aura_con");
-				}, 10000);
+				}, 60000);
 			}, true);
 			aura.addEventListener('animationend', function(event){
 				var aura = angular.element(event.target);
@@ -34,7 +34,7 @@
 					aura = angular.element(document.querySelector('#aura'));
 					aura.toggleClass("aura_exp");
 					aura.toggleClass("aura_con");
-				}, 10000);
+				}, 60000);
 			}, true);
 			// $scope.goose = $interval(function(){
 			// 	var stLeft = Math.floor(Math.random() * 900) / 10 + 10;

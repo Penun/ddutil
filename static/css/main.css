@@ -266,12 +266,12 @@ body {
 	background-repeat: repeat;
 	background-position-x: center;
 	background-color: #000000;
-	animation-name: bFloat;
+	/*animation-name: bFloat;
 	-webkit-animation-name: bFloat;
-	animation-duration: 30s;
-	-webkit-animation-duration: 30s;
+	animation-duration: 45s;
+	-webkit-animation-duration: 45s;
 	animation-timing-function: linear;
-	animation-iteration-count: infinite;
+	animation-iteration-count: infinite;*/
 	color: #302418;
 	font-family: 'Oldenburg', cursive;
 	width: 75vw;
