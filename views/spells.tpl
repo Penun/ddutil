@@ -9,14 +9,12 @@
                     <th ng-click="mCont.SortList(spells, 'name', 'spNa')">Name</th>
                     <th ng-click="mCont.SortList(spells, 'school', 'spSc')">School</th>
                     <th ng-click="mCont.SortList(spells, 'level', 'spLe')">Level</th>
-                    <th ng-click="mCont.SortList(spells, 'range', 'spRa')">Range</th>
                 </tr>
                 <tr ng-repeat="(ind, spell) in spells" ng-click="mCont.RevealSpell(ind)" class="item">
-                    <td>{{"{{spell.name}}"}}</td>
+                    <td class="rang">{{"{{spell.name}}"}}</td>
                     <td class="rang">{{"{{spell.school}}"}}</td>
                     <td class="rang" ng-if="spell.level == 0">Cantrip</td>
                     <td class="rang" ng-if="spell.level != 0">{{"{{spell.level}}"}}</td>
-                    <td class="rang">{{"{{spell.range}}"}}</td>
                 </tr>
             </table>
             <div class="popBox talentPanelOut fade_nu" id="popPanel" ng-show="curSpell != null">

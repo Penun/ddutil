@@ -8,7 +8,15 @@
 		angular.element(document).ready(function(){
 			$http.get("/spells").then(function(ret){
 				if (ret.data.occ.success){
-					$scope.spells = ret.data.spells;
+					$scope.spells = [];
+					for (var i = 0; i < ret.data.spells.length; i++){
+						$scope.spells.push({
+							id: ret.data.spells[i].Id,
+							name: ret.data.spells[i].Name,
+							school: ret.data.spells[i].School,
+							level: ret.data.spells[i].Level
+						});
+					}
 				} else {
 					$scope.spells = [];
 				}
@@ -34,7 +42,7 @@
 			if ($scope.moldSpell.name != ""){
 				var found = false;
 				for (var i = 0; i < $scope.spells.length; i++){
-					if ($scope.moldSpell.name == $scope.spells[i].name){
+					if ($scope.moldSpell.name == $scope.spells[i].Name){
 						found = true;
 						break;
 					}
