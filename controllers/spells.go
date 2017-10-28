@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/Penun/ddutil/models"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
     "encoding/json"
 )
 
@@ -12,7 +13,18 @@ type SpellsController struct {
 
 type GetSpeResp struct {
     Occ BaseResp `json:"occ"`
-    Spells []models.Spell `json:"spells"`
+    Spells []orm.Params `json:"spells"`
+}
+
+type GetSpelReq struct {
+    Id int64 `json:"id"`
+    Index int `json:"index"`
+}
+
+type GetSpelResp struct{
+	Occ BaseResp `json:"occ"`
+    Spell models.Spell `json:"spell"`
+    Index int `json:"index"`
 }
 
 type InsSpeReq struct {
@@ -26,8 +38,8 @@ type InsSpeResp struct{
 
 func (this *SpellsController) Get() {
     resp := GetSpeResp{Occ: BaseResp{Success: false, Error: ""}}
-	var t_spec []models.Spell
-    t_spec = models.GetSpells()
+	var t_spec []orm.Params
+    t_spec = models.GetSpellList()
 	if len(t_spec) > 0{
 		resp.Occ.Success = true
 		resp.Spells = t_spec
@@ -36,6 +48,19 @@ func (this *SpellsController) Get() {
 	}
     this.Data["json"] = resp
     this.ServeJSON()
+}
+
+func (this *SpellsController) Spell() {
+	var desReq GetSpelReq
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &desReq)
+	resp := GetSpelResp{Occ: BaseResp{Success: false, Error: ""}}
+	if err == nil {
+		resp.Spell = models.GetSpell(desReq.Id)
+		resp.Index = desReq.Index
+		resp.Occ.Success = true
+	}
+	this.Data["json"] = resp
+	this.ServeJSON()
 }
 
 func (this *SpellsController) Add() {

@@ -10,7 +10,15 @@
 		angular.element(document).ready(function(){
 			$http.get("/spells").then(function(ret){
 				if (ret.data.occ.success){
-					$scope.spells = ret.data.spells;
+					$scope.spells = [];
+					for (var i = 0; i < ret.data.spells.length; i++){
+						$scope.spells.push({
+							id: ret.data.spells[i].Id,
+							name: ret.data.spells[i].Name,
+							school: ret.data.spells[i].School,
+							level: ret.data.spells[i].Level
+						});
+					}
 				} else {
 					$scope.spells = [];
 				}
@@ -57,7 +65,20 @@
 		});
 
 		this.RevealSpell = function(ind){
-			$scope.curSpell = $scope.spells[ind];
+			if ($scope.spells[ind].description == null) {
+				sendData = {
+					id: $scope.spells[ind].id,
+					index: ind
+				}
+				$http.post("/spells/spell", sendData).then(function(ret){
+					if (ret.data.occ.success){
+						$scope.spells[ret.data.index] = ret.data.spell;
+						$scope.curSpell = ret.data.spell;
+					}
+				});
+			} else {
+				$scope.curSpell = $scope.spells[ind];
+			}
 			angular.element(document.querySelector("#popPanel")).toggleClass("fade_in fade_nu");
 		};
 

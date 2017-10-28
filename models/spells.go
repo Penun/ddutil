@@ -4,14 +4,25 @@ import (
     "github.com/astaxie/beego/orm"
 )
 
-func GetSpells() []Spell{
+func GetSpellList() []orm.Params{
     o := orm.NewOrm()
-    var spells []Spell
-    o.QueryTable("spell").OrderBy("name").All(&spells)
+    var spells []orm.Params
+    o.QueryTable("spell").OrderBy("name").Values(&spells, "id", "name", "school", "level")
     if len(spells) > 0 {
         return spells
     } else {
-        return []Spell{}
+        return []orm.Params{}
+    }
+}
+
+func GetSpell(sp_id int64) Spell{
+    o := orm.NewOrm()
+    var spell Spell
+    err := o.QueryTable("spell").Filter("id", sp_id).One(&spell)
+    if err == nil {
+        return spell
+    } else {
+        return Spell{}
     }
 }
 
