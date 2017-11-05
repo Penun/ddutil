@@ -1,0 +1,18 @@
+body {
+    overflow-y: auto;
+    height: 100vh;
+    min-height: 75vw;
+    width: 100vw;
+}
+
+.mainDiv {
+    height: 100%;
+}
+
+.page {
+    font-size: 0.75em;
+    padding-left: 8%;
+    width: 90%;
+    height: 100%;
+    margin-top: 0;
+}
