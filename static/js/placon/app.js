@@ -16,7 +16,7 @@
 				charName.focus();
 				return;
 			}
-			this.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=play&uname=' + $scope.char.name);
+			this.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=play&uname=' + $scope.char.name + '&hp=' + $scope.char.hp);
 			this.sock.onmessage = this.HandleMessage;
 			$http.get("/track/subs").then(function(ret){
 				if (ret.data.success){
