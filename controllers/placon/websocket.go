@@ -44,15 +44,25 @@ func (this *WebSocketController) Watch() {
 	this.TplName = "placon/watch.tpl"
 }
 
+func (this *WebSocketController) Master() {
+	this.TplName = "placon/master.tpl"
+}
+
 // Join method handles WebSocket requests for WebSocketController.
 func (this *WebSocketController) Join() {
 	uname := ""
 	ws_type := this.GetString("type")
-	if ws_type == "play" {
+	if ws_type == "play" || ws_type == "master" {
 		uname = this.GetString("uname")
 		if len(uname) == 0 {
 			this.Redirect("/", 302)
 			return
+		}
+		for _, sub := range subscribers {
+			if sub.Name == uname {
+				this.Redirect("/", 302)
+				return
+			}
 		}
 	} else if ws_type == "watch" {
 		uname = "watch" + strconv.FormatInt(time.Now().Unix(), 10)
@@ -90,6 +100,8 @@ func (this *WebSocketController) Join() {
 			switch conReq.Type {
 			case "note":
 				HandleNote(uname, ws_type, conReq.Data)
+			case "longrest":
+				HandleLongrest(uname, ws_type, conReq.Data)
 			}
 		}
 	}

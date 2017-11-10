@@ -8,18 +8,11 @@
 		$scope.textareaReq = true;
 		$scope.activeNote = "";
 		this.lastNote = 0;
-		$scope.charNameSug = "Name";
 
-		this.AddChar = function(){
-			$scope.char.name = $scope.char.name.trim();
-			if (typeof $scope.char.name === 'undefined' || $scope.char.name.length == 0){
-				var charName = document.getElementById("charName");
-				charName.focus();
-				return;
-			}
-			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=play&uname=' + $scope.char.name);
-			$timeout(this.SetupSocket, 30);
-		};
+		angular.element(document).ready(function(){
+			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=master&uname=DM');
+			$timeout($scope.SetupSocket, 30);
+		});
 
 		$scope.ToggleMenu = function(){
 			if ($scope.showMenu){
@@ -55,12 +48,6 @@
 		};
 
 		this.SendNote = function(){
-			var calcedT = (Date.now() - this.lastNote) / 900000;
-			if (calcedT < 1){
-				$scope.activeNote = 'DM says: Only one note every 15 minutes."\n';
-				$scope.SetStep(0, false);
-				return;
-			}
 			if (typeof $scope.note.players === 'undefined' || $scope.note.players.length == 0){
 				var subSel = document.getElementById("subSel");
 				subSel.focus();
@@ -83,12 +70,24 @@
 			$scope.sock.send(sendData);
 			this.lastNote = Date.now();
 			$scope.note = {};
-			$scope.SetStep(2);
+			$scope.SetStep(1);
 		};
 
 		this.ReadNote = function(){
 			$scope.activeNote = "";
 			$scope.SetStep($scope.backStep, false);
+		};
+
+		this.Longrest = function(){
+			var sendData = {
+				type: "longrest",
+				data: JSON.stringify({
+					players: $scope.longrest.players
+				})
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+			$scope.SetStep(1);
 		};
 
 		this.FocusKi = function(){
@@ -98,36 +97,24 @@
 			}
 		};
 
-		this.FocusSpell = function(){
-			if ($scope.char.hasSpells){
-				var charSp = document.getElementById("charSpe1");
-				charSp.focus();
-			}
-		};
-
 		this.ShowStep = function(step){
 			return $scope.curStep == step;
 		};
 
-		this.SetupSocket = function(){
+		$scope.SetupSocket = function(){
 			if ($scope.sock.readyState === 1){
 				$scope.sock.onmessage = $scope.HandleMessage;
 				$http.get("/track/subs").then(function(ret){
 					if (ret.data.success){
 						for (var i = 0; i < ret.data.result.length; i++){
-							if (ret.data.result[i].name == $scope.char.name || ret.data.result[i].type == "master"){
+							if (ret.data.result[i].name == "DM" || ret.data.result[i].type == "master"){
 								ret.data.result.splice(i, 1);
-								i--;
+								break;
 							}
 						}
 						$scope.subs = ret.data.result;
 					}
 				});
-				$scope.SetStep(2, true);
-			} else if ($scope.sock.readyState == 3){
-				$scope.char = {};
-				$scope.sock = null;
-				$scope.charNameSug = "Name Taken.";
 			}
 		};
 

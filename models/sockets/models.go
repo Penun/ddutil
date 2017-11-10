@@ -6,6 +6,7 @@ const (
 	EVENT_JOIN = iota
 	EVENT_LEAVE
 	EVENT_NOTE
+	EVENT_LONG
 )
 
 type Event struct {

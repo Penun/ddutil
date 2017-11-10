@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/gorilla/websocket"
 	"github.com/Penun/ddutil/models/sockets"
+	"encoding/json"
 )
 
 type Subscription struct {
@@ -11,22 +12,15 @@ type Subscription struct {
 	New     <-chan sockets.Event // New events coming in.
 }
 
-func newEvent(ep sockets.EventType, user string, ws_type string, targets []string, data string) sockets.Event {
-	return sockets.Event{ep, sockets.Player{user, ws_type}, targets, data}
-}
-
-func Join(user string, ws_type string, ws *websocket.Conn) {
-	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws}
-}
-
-func Leave(user string) {
-	unsubscribe <- user
-}
-
 type Subscriber struct {
 	Name string `json:"name"`
     Type string `json:"type"`
 	Conn *websocket.Conn `json:"conn"`// Only for WebSocket users; otherwise nil.
+}
+
+type Note struct {
+    Players []string `json:"players"`
+    Message string `json:"message"`
 }
 
 var (
@@ -81,6 +75,18 @@ func init() {
 	go handler()
 }
 
+func newEvent(ep sockets.EventType, user string, ws_type string, targets []string, data string) sockets.Event {
+	return sockets.Event{ep, sockets.Player{user, ws_type}, targets, data}
+}
+
+func Join(user string, ws_type string, ws *websocket.Conn) {
+	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws}
+}
+
+func Leave(user string) {
+	unsubscribe <- user
+}
+
 func isUserExist(subscribers []Subscriber, user string) bool {
 	for i := 0; i < len(subscribers); i++ {
 		if subscribers[i].Name == user {
@@ -88,4 +94,20 @@ func isUserExist(subscribers []Subscriber, user string) bool {
 		}
 	}
 	return false
+}
+
+func HandleNote(uname string, ws_type string, data string) {
+    var parsDat Note
+    err := json.Unmarshal([]byte(data), &parsDat)
+    if err == nil {
+        publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, parsDat.Players, parsDat.Message)
+    }
+}
+
+func HandleLongrest(uname string, ws_type string, data string) {
+    var parsDat Note
+    err := json.Unmarshal([]byte(data), &parsDat)
+    if err == nil {
+        publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, parsDat.Players, "")
+    }
 }

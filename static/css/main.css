@@ -646,3 +646,11 @@ td.table_name {
 	font-family: 'Oldenburg', cursive;
 	white-space: pre-wrap;
 }
+
+.p_menu {
+	min-height: 2em;
+}
+
+.p_inline {
+	font-size: 1.25em;
+}
