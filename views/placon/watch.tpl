@@ -6,6 +6,7 @@
 				<ul>
 					<li ng-repeat="(ind, play) in players">
                 		<p><label><b>{{"{{play.name}}"}}</b></label></p>
+                		<p><label><b>HP:</b> {{"{{play.hp}}"}}</label></p>
 					</li>
 				</ul>
             </div>
