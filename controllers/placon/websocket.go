@@ -129,7 +129,7 @@ func (this *WebSocketController) Subs() {
 func broadcastWebSocket(event sockets.Event) {
 	for i := 0; i < len(subscribers); i++ {
 		send := false
-		if event.Type == sockets.EVENT_NOTE {
+		if event.Type == sockets.EVENT_NOTE || event.Type == sockets.EVENT_LONG {
 			for j := 0; j < len(event.Targets); j++ {
 				if event.Targets[j] == subscribers[i].Name {
 					send = true

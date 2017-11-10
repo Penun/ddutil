@@ -16,7 +16,7 @@
             <div ng-show="mCont.ShowStep(1)" class="sixty_he">
                 <form id="charAddForm" name="charAddForm" novalidate>
                     <p><label><b>Name:</b></label> <input type="text" name="charName" id="charName" ng-model="char.name" tabindex="1" autofocus required placeholder="{{"{{charNameSug}}"}}"/></p>
-                    <p><label><b>HP:</b></label> <input type="number" name="charHp" id="charHp" ng-model="char.hp" min="1" placeholder="0" /></p>
+                    <p><label><b>HP:</b></label> <input type="number" name="charHp" id="charHp" ng-model="char.hp" min="1" placeholder="0" required/></p>
                     <!-- <p><input type="checkbox" name="hasKi" id="hasKi" ng-model="char.hasKi" ng-click="mCont.FocusKi()" /> <label><b>Ki<span ng-show="!char.hasKi" class="inline_span">?</span>:</b></label> <input type="number" ng-show="char.hasKi" name="charKi" id="charKi" ng-model="char.ki" min="1" max="20" placeholder="0" /></p>
                     <p><input type="checkbox" name="hasSpells" id="hasSpells" ng-model="char.hasSpells" ng-click="mCont.FocusSpell()" /> <label><b>Spells<span ng-show="!char.hasSpells" class="inline_span">?</span>:</b></label></p>
 					<p ng-show="char.hasSpells"><label for="charSpe1">1st Lvl:</label> <input type="number" name="charSpe1" id="charSpe1" ng-model="char.spe1" min="1" max="20" placeholder="0" /></p>
@@ -34,7 +34,7 @@
             <div ng-show="mCont.ShowStep(2)" class="sixty_he">
 				<p class="s_ws_p_inline" ng-show="!showMenu"><button ng-click="ToggleMenu()">Menu</button></p>
                 <p class="s_ws_p_inline"><label><b>{{"{{char.name}}"}}</b></label></p>
-                <p class="s_ws_p_inline"><label><b>HP:</b> {{"{{char.hp}}"}}</label></p>
+                <p class="s_ws_p_inline"><label><b>HP:</b> {{"{{mCont.curChar.hp}}"}}</label></p>
             </div>
 			<div ng-show="mCont.ShowStep(3)" class="sixty_he">
 				<p class="s_ws_p_inline" ng-show="!showMenu"><button ng-click="ToggleMenu()">Menu</button></p>

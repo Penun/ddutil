@@ -2,7 +2,9 @@
 	var app = angular.module('ddcharL', []);
 	app.controller('mainController', ['$window', '$scope', '$http', '$timeout', function($window, $scope, $http, $timeout){
 		$scope.char = {};
+		this.curChar = {};
 		$scope.note = {};
+		$scope.longrest = {};
 		$scope.showMenu = false;
 		$scope.backStep = $scope.curStep = 1;
 		$scope.textareaReq = true;
@@ -17,6 +19,13 @@
 				charName.focus();
 				return;
 			}
+			if (typeof $scope.char.hp === 'undefined' || $scope.char.hp <= 0){
+				$scope.char.hp = null;
+				var charHp = document.getElementById("charHp");
+				charHp.focus();
+				return;
+			}
+			this.curChar = $scope.char;
 			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=play&uname=' + $scope.char.name);
 			$timeout(this.SetupSocket, 30);
 		};
@@ -34,7 +43,7 @@
 			console.log(data);
 			switch (data.type) {
 			case 0: // JOIN
-				if (data.player.type == "play" && data.player.name != $scope.char.name){
+				if (data.player.type != "watch" && data.player.name != $scope.char.name){
 					$scope.subs.push(data.player);
 				}
 				break;
@@ -115,9 +124,9 @@
 				$http.get("/track/subs").then(function(ret){
 					if (ret.data.success){
 						for (var i = 0; i < ret.data.result.length; i++){
-							if (ret.data.result[i].name == $scope.char.name || ret.data.result[i].type == "master"){
+							if (ret.data.result[i].name == $scope.char.name){
 								ret.data.result.splice(i, 1);
-								i--;
+								break;
 							}
 						}
 						$scope.subs = ret.data.result;
