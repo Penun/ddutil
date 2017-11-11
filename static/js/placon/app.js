@@ -4,8 +4,8 @@
 		$scope.char = {};
 		this.curChar = {};
 		$scope.note = {};
+		this.damForm = {};
 		$scope.longrest = {};
-		$scope.showMenu = false;
 		$scope.backStep = $scope.curStep = 1;
 		$scope.textareaReq = true;
 		$scope.activeNote = "";
@@ -30,17 +30,38 @@
 			$timeout(this.SetupSocket, 30);
 		};
 
-		$scope.ToggleMenu = function(){
-			if ($scope.showMenu){
-				$scope.showMenu = false;
-			} else {
-				$scope.showMenu = true;
+		this.SetupSocket = function(){
+			if ($scope.sock.readyState === 1){
+				$scope.sock.onmessage = $scope.HandleMessage;
+				$http.get("/track/subs").then(function(ret){
+					if (ret.data.success){
+						for (var i = 0; i < ret.data.result.length; i++){
+							if (ret.data.result[i].name == $scope.char.name){
+								ret.data.result.splice(i, 1);
+								break;
+							}
+						}
+						$scope.subs = ret.data.result;
+					}
+				});
+				var sendData = {
+					type: "hp",
+					data: {
+						message: String($scope.char.hp)
+					}
+				};
+				sendData = JSON.stringify(sendData);
+				$scope.sock.send(sendData);
+				$scope.SetStep(2, true);
+			} else if ($scope.sock.readyState == 3){
+				$scope.char = {};
+				$scope.sock = null;
+				$scope.charNameSug = "Name Taken.";
 			}
 		};
 
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
-			console.log(data);
 			switch (data.type) {
 			case 0: // JOIN
 				if (data.player.type != "watch" && data.player.name != $scope.char.name){
@@ -57,7 +78,7 @@
 				break;
 			case 2: // NOTE
 				$scope.activeNote += data.player.name + ' says: "' + data.data + '"\n';
-				$scope.SetStep(0, false);
+				$scope.SetStep(10, false);
 				break;
 			}
 			$scope.$apply();
@@ -66,8 +87,8 @@
 		this.SendNote = function(){
 			var calcedT = (Date.now() - this.lastNote) / 900000;
 			if (calcedT < 1){
-				$scope.activeNote = 'DM says: Only one note every 15 minutes."\n';
-				$scope.SetStep(0, false);
+				$scope.activeNote = 'DM says: "Only one note every 15 minutes."\n';
+				$scope.SetStep(10, false);
 				return;
 			}
 			if (typeof $scope.note.players === 'undefined' || $scope.note.players.length == 0){
@@ -83,10 +104,10 @@
 
 			var sendData = {
 				type: "note",
-				data: JSON.stringify({
+				data: {
 					players: $scope.note.players,
 					message: $scope.note.message
-				})
+				}
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
@@ -98,6 +119,23 @@
 		this.ReadNote = function(){
 			$scope.activeNote = "";
 			$scope.SetStep($scope.backStep, false);
+		};
+
+		this.Damage = function(){
+			if (this.damForm.damage > 0){
+				this.damForm.damage = -this.damForm.damage;
+			}
+			this.curChar.hp += this.damForm.damage;
+			var sendData = {
+				type: "hp",
+				data: {
+					message: String(this.damForm.damage)
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+			$scope.SetStep($scope.backStep, false);
+			this.damForm = {};
 		};
 
 		this.FocusKi = function(){
@@ -118,35 +156,10 @@
 			return $scope.curStep == step;
 		};
 
-		this.SetupSocket = function(){
-			if ($scope.sock.readyState === 1){
-				$scope.sock.onmessage = $scope.HandleMessage;
-				$http.get("/track/subs").then(function(ret){
-					if (ret.data.success){
-						for (var i = 0; i < ret.data.result.length; i++){
-							if (ret.data.result[i].name == $scope.char.name){
-								ret.data.result.splice(i, 1);
-								break;
-							}
-						}
-						$scope.subs = ret.data.result;
-					}
-				});
-				$scope.SetStep(2, true);
-			} else if ($scope.sock.readyState == 3){
-				$scope.char = {};
-				$scope.sock = null;
-				$scope.charNameSug = "Name Taken.";
-			}
-		};
-
 		$scope.SetStep = function(step, upBack){
 			$scope.curStep = step;
 			if (upBack){
 				$scope.backStep = step;
-			}
-			if ($scope.showMenu){
-				$scope.ToggleMenu();
 			}
 		};
 	}]);

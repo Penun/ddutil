@@ -22,7 +22,12 @@ type GetSubsResp struct {
 
 type ControllerReq struct {
 	Type string `json:"type"`
-	Data string `json:"data"`
+	Data MultiMess `json:"data"`
+}
+
+type MultiMess struct {
+    Players []string `json:"players"`
+    Message string `json:"message"`
 }
 
 type SocketMessage struct {
@@ -34,6 +39,7 @@ type SocketMessage struct {
 type PSub struct {
 	Name string `json:"name"`
     Type string `json:"type"`
+    HP int `json:"hp"`
 }
 
 func (this *WebSocketController) Get() {
@@ -99,9 +105,17 @@ func (this *WebSocketController) Join() {
 		if err == nil {
 			switch conReq.Type {
 			case "note":
-				HandleNote(uname, ws_type, conReq.Data)
+				publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "longrest":
-				HandleLongrest(uname, ws_type, conReq.Data)
+				publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "hp":
+				for i := 0; i < len(subscribers); i++ {
+					if uname == subscribers[i].Name {
+						hp, _ := strconv.Atoi(conReq.Data.Message)
+						subscribers[i].Stats.HP += hp
+					}
+				}
+				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			}
 		}
 	}
@@ -114,7 +128,7 @@ func (this *WebSocketController) Subs() {
 	if sub_len := len(subscribers); sub_len > 0 {
 		for i := 0; i < sub_len; i++ {
 			if subscribers[i].Type != "watch" {
-				psub := PSub{Name: subscribers[i].Name, Type: subscribers[i].Type}
+				psub := PSub{Name: subscribers[i].Name, Type: subscribers[i].Type, HP: subscribers[i].Stats.HP}
 				subs = append(subs, psub)
 			}
 		}
@@ -135,6 +149,10 @@ func broadcastWebSocket(event sockets.Event) {
 					send = true
 					break
 				}
+			}
+		} else if event.Type == sockets.EVENT_HP {
+			if subscribers[i].Type == "watch" {
+				send = true
 			}
 		} else {
 			send = true

@@ -7,6 +7,7 @@ const (
 	EVENT_LEAVE
 	EVENT_NOTE
 	EVENT_LONG
+	EVENT_HP
 )
 
 type Event struct {

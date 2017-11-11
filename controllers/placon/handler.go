@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/gorilla/websocket"
 	"github.com/Penun/ddutil/models/sockets"
-	"encoding/json"
 )
 
 type Subscription struct {
@@ -14,13 +13,13 @@ type Subscription struct {
 
 type Subscriber struct {
 	Name string `json:"name"`
-    Type string `json:"type"`
-	Conn *websocket.Conn `json:"conn"`// Only for WebSocket users; otherwise nil.
+	Type string `json:"type"`
+	Conn *websocket.Conn `json:"conn"`
+	Stats StatBlock `json:"stat_block"` //Only fo players otherwise nil
 }
 
-type Note struct {
-    Players []string `json:"players"`
-    Message string `json:"message"`
+type StatBlock struct {
+	HP int `json:"hp"`
 }
 
 var (
@@ -80,7 +79,7 @@ func newEvent(ep sockets.EventType, user string, ws_type string, targets []strin
 }
 
 func Join(user string, ws_type string, ws *websocket.Conn) {
-	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws}
+	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws, Stats: StatBlock{}}
 }
 
 func Leave(user string) {
@@ -94,20 +93,4 @@ func isUserExist(subscribers []Subscriber, user string) bool {
 		}
 	}
 	return false
-}
-
-func HandleNote(uname string, ws_type string, data string) {
-    var parsDat Note
-    err := json.Unmarshal([]byte(data), &parsDat)
-    if err == nil {
-        publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, parsDat.Players, parsDat.Message)
-    }
-}
-
-func HandleLongrest(uname string, ws_type string, data string) {
-    var parsDat Note
-    err := json.Unmarshal([]byte(data), &parsDat)
-    if err == nil {
-        publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, parsDat.Players, "")
-    }
 }

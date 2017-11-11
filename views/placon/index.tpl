@@ -2,14 +2,14 @@
 <body ng-controller="mainController as mCont" ng-cloak>
 	<div class="mainDiv" id="forwardMain">
 		<div class="page sc_back">
-			<div id="menu" class="contMenu" ng-show="showMenu">
+			<div id="menu" class="sixty_he" ng-show="mCont.ShowStep(0)">
 				<ul>
-					<li class="clickable" ng-click="ToggleMenu()">Close</li>
+					<li class="clickable" ng-click="SetStep(backStep, false)">Close</li>
 					<li class="clickable" ng-click="SetStep(3, true)">Note</li>
 					<li class="clickable" ng-click="SetStep(2, true)">Stats</li>
 				</ul>
 			</div>
-			<div ng-show="activeNote != ''" class="sixty_he">
+			<div ng-show="mCont.ShowStep(10)" class="sixty_he">
 				<p class="note">{{"{{activeNote}}"}}</p>
 				<button ng-click="mCont.ReadNote()">Read</button>
 			</div>
@@ -32,18 +32,25 @@
                 </form>
             </div>
             <div ng-show="mCont.ShowStep(2)" class="sixty_he">
-				<p class="s_ws_p_inline" ng-show="!showMenu"><button ng-click="ToggleMenu()">Menu</button></p>
+				<p class="s_ws_p_inline"><button ng-click="SetStep(0, false)">Menu</button></p>
                 <p class="s_ws_p_inline"><label><b>{{"{{char.name}}"}}</b></label></p>
-                <p class="s_ws_p_inline"><label><b>HP:</b> {{"{{mCont.curChar.hp}}"}}</label></p>
+                <p class="s_ws_p_inline"><label><b>HP:</b> {{"{{mCont.curChar.hp}}"}}</label>  ~~~~~~  <button ng-click="SetStep(4, false)" class="inline_butt">-</button></p>
             </div>
 			<div ng-show="mCont.ShowStep(3)" class="sixty_he">
-				<p class="s_ws_p_inline" ng-show="!showMenu"><button ng-click="ToggleMenu()">Menu</button></p>
+				<p class="s_ws_p_inline"><button ng-click="SetStep(0, false)">Menu</button></p>
 				<form name="noteForm" id="noteForm" novalidate>
 					<select name="subSel" id="subSel" ng-show="subs.length > 0" ng-model="note.players" ng-options="sub.name as sub.name for sub in subs" multiple required></select>
 					<textarea name="noteMessage" id="noteMessage" ng-model="note.message" ng-required="textareaReq"></textarea>
 					<button ng-show="noteForm.$valid" ng-click="mCont.SendNote()">Send</button>
 				</form>
 			</div>
+			<div ng-show="mCont.ShowStep(4)" class="sixty_he">
+				<p class="s_ws_p_inline"><button ng-click="SetStep(backStep, false)">Cancel</button></p>
+				<form name="damForm" id="damForm" novalidate>
+					<p class="s_ws_p_inline"><label for="damIn"><b>Damage:</b></label> <input type="number" name="damIn" id="damIn" ng-model="mCont.damForm.damage" placeholder="0" required/></p>
+					<button ng-show="damForm.$valid" ng-click="mCont.Damage()">Damage</button>
+				</form>
+            </div>
 		</div>
 	</div>
 </body>

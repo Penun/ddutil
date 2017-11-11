@@ -24,7 +24,6 @@
 
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
-			console.log(data);
 			switch (data.type) {
 			case 0: // JOIN
 				if (data.player.type == "play" && data.player.name != $scope.char.name){
@@ -61,16 +60,16 @@
 
 			var sendData = {
 				type: "note",
-				data: JSON.stringify({
+				data: {
 					players: $scope.note.players,
 					message: $scope.note.message
-				})
+				}
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
 			this.lastNote = Date.now();
 			$scope.note = {};
-			$scope.SetStep(1);
+			$scope.SetStep(1, true);
 		};
 
 		this.ReadNote = function(){
@@ -87,7 +86,7 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			$scope.SetStep(1);
+			$scope.SetStep(1, true);
 		};
 
 		this.FocusKi = function(){
