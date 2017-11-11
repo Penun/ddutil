@@ -32,11 +32,7 @@
 					aura = angular.element(document.querySelector('#aura'));
 					aura.toggleClass("aura_exp");
 					aura.toggleClass("aura_con");
-<<<<<<< HEAD
 				}, 60000);
-=======
-				}, 10000);
->>>>>>> 99746df87f7722dd2c68a5e1a96036198b13585a
 			}, true);
 			aura.addEventListener('animationend', function(event){
 				var aura = angular.element(event.target);
@@ -46,11 +42,7 @@
 					aura = angular.element(document.querySelector('#aura'));
 					aura.toggleClass("aura_exp");
 					aura.toggleClass("aura_con");
-<<<<<<< HEAD
 				}, 60000);
-=======
-				}, 10000);
->>>>>>> 99746df87f7722dd2c68a5e1a96036198b13585a
 			}, true);
 			// $scope.goose = $interval(function(){
 			// 	var stLeft = Math.floor(Math.random() * 900) / 10 + 10;

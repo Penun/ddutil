@@ -206,15 +206,9 @@
 	animation-name: fade_in;
 	-webkit-animation-name: fade_in;
 	-moz-animation-name: fade_in;
-<<<<<<< HEAD
 	animation-duration: 333ms;
 	-webkit-animation-duration: 333ms;
 	-moz-animation-duration: 333ms;
-=======
-	animation-duration: 500ms;
-	-webkit-animation-duration: 500ms;
-	-moz-animation-duration: 500ms;
->>>>>>> 99746df87f7722dd2c68a5e1a96036198b13585a
 }
 
 .rise_1 {
@@ -272,21 +266,12 @@ body {
 	background-repeat: repeat;
 	background-position-x: center;
 	background-color: #000000;
-<<<<<<< HEAD
 	/*animation-name: bFloat;
 	-webkit-animation-name: bFloat;
 	animation-duration: 45s;
 	-webkit-animation-duration: 45s;
 	animation-timing-function: linear;
 	animation-iteration-count: infinite;*/
-=======
-	animation-name: bFloat;
-	-webkit-animation-name: bFloat;
-	animation-duration: 120s;
-	-webkit-animation-duration: 120s;
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
->>>>>>> 99746df87f7722dd2c68a5e1a96036198b13585a
 	color: #302418;
 	font-family: 'Oldenburg', cursive;
 	width: 75vw;
@@ -335,12 +320,7 @@ body {
 	z-index: 0;
 	height: 90vh;
 	width: 71vw;
-<<<<<<< HEAD
 	margin-left: 3vw;
-=======
-	padding-left: 1vw;
-	padding-right: 2vw;
->>>>>>> 99746df87f7722dd2c68a5e1a96036198b13585a
 }
 
 .popBox {
