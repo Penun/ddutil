@@ -82,6 +82,9 @@
 					$scope.activeNote += data.player.name + ' says: "' + data.data + '"\n';
 					$scope.SetStep(10, false);
 					break;
+				case 4:
+					$scope.curChar.hp += Number(data.data);
+					break;
 				case 6:
 					$scope.curChar.initiative = 0;
 					break;

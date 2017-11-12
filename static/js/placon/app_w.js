@@ -47,14 +47,25 @@
 					}
 					break;
 				case 4: // HP
-					for (var i = 0; i < $scope.players.length; i++){
-						if ($scope.players[i].name == data.player.name){
-							if (typeof $scope.players[i].hp === 'undefined'){
-								$scope.players[i].hp = Number(data.data);
-							} else {
-								$scope.players[i].hp += Number(data.data);
+					if (data.player.type != "master"){
+						for (var i = 0; i < $scope.players.length; i++){
+							if ($scope.players[i].name == data.player.name){
+								if (typeof $scope.players[i].hp === 'undefined'){
+									$scope.players[i].hp = Number(data.data);
+								} else {
+									$scope.players[i].hp += Number(data.data);
+								}
+								break;
 							}
-							break;
+						}
+					} else {
+						for (var i = 0; i < data.players.length; i++){
+							for (var j = 0; j < $scope.players.length; j++){
+								if ($scope.players[j].name == data.players[i]){
+									$scope.players[j].hp += Number(data.data);
+									break;
+								}
+							}
 						}
 					}
 					break;
@@ -66,11 +77,10 @@
 						}
 					}
 					break;
-				case 6:
-					var inData = JSON.parse(data.data);
-					for (var i = 0; i < inData.length; i++){
+				case 6: // INITIATIVE DM RESET
+					for (var i = 0; i < data.players.length; i++){
 						for (var j = 0; j < $scope.players.length; j++){
-							if ($scope.players[j].name == inData[i]){
+							if ($scope.players[j].name == data.players[i]){
 								$scope.players[j].initiative = 0;
 								break;
 							}

@@ -21,12 +21,20 @@
 				</form>
 			</div>
 			<div ng-show="mCont.ShowStep(3)" class="sixty_he">
-				<p class="s_ws_p_inline"><button ng-click="mCont.ClearForm(2)">Cancel</button></p>
+				<p class="s_ws_p_inline"><button ng-click="mCont.ClearForm(3)">Cancel</button></p>
 				<form name="actForm" id="actForm" novalidate>
 					<select name="subSelAct" id="subSelAct" ng-show="subs.length > 0" ng-model="mCont.action.players" ng-options="sub.name as sub.name for sub in subs" multiple required></select>
 					<button ng-show="actForm.$valid" ng-click="mCont.Action()">{{"{{mCont.actionText}}"}}</button>
 				</form>
 			</div>
+			<div ng-show="mCont.ShowStep(4)" class="sixty_he">
+				<p class="s_ws_p_inline"><button ng-click="mCont.ClearForm(4)">Cancel</button></p>
+				<form name="inpForm" id="inpForm" novalidate>
+					<select name="subSelInp" id="subSelInp" ng-show="subs.length > 0" ng-model="mCont.inpForm.players" ng-options="sub.name as sub.name for sub in subs" multiple required></select>
+					<p class="s_ws_p_inline"><label for="inpIn"><b>{{"{{mCont.inputText}}"}}:</b></label> <input type="number" name="inpIn" id="inpIn" ng-model="mCont.inpForm.input" placeholder="0" required/></p>
+					<button ng-show="inpForm.$valid" ng-click="mCont.Input()">{{"{{mCont.inputText}}"}}</button>
+				</form>
+            </div>
 		</div>
 	</div>
 </body>

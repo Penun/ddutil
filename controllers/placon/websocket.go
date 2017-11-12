@@ -31,8 +31,15 @@ type MultiMess struct {
 }
 
 type SocketMessage struct {
-	Type sockets.EventType `json:"type"` // JOIN, LEAVE, NOTE
+	Type sockets.EventType `json:"type"`
 	Player sockets.Player `json:"player"`
+	Data string `json:"data"`
+}
+
+type SocketWatchMessage struct {
+	Type sockets.EventType `json:"type"`
+	Player sockets.Player `json:"player"`
+	Players []string `json:"players"`
 	Data string `json:"data"`
 }
 
@@ -42,6 +49,7 @@ type PSub struct {
     HP int `json:"hp"`
  	Initiative int `json:"initiative"`
 }
+
 
 func (this *WebSocketController) Get() {
 	this.TplName = "placon/index.tpl"
@@ -117,7 +125,18 @@ func (this *WebSocketController) Join() {
 				publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "hp":
 				hp, _ := strconv.Atoi(conReq.Data.Message)
-				sub.Stats.HP += hp
+				if ws_type == "play" {
+					sub.Stats.HP += hp
+				} else {
+					for i := 0; i < len(conReq.Data.Players); i++ {
+						for j := 0; j < len(subscribers); j++ {
+							if (subscribers[j].Name == conReq.Data.Players[i]){
+								subscribers[j].Stats.HP += hp;
+								break;
+							}
+						}
+					}
+				}
 				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "initiative":
 				init, _ := strconv.Atoi(conReq.Data.Message)
@@ -162,41 +181,44 @@ func (this *WebSocketController) Subs() {
 func broadcastWebSocket(event sockets.Event) {
 	for i := 0; i < len(subscribers); i++ {
 		send := false
-		actPlay := false
-		if event.Type == sockets.EVENT_NOTE || event.Type == sockets.EVENT_LONG || event.Type == sockets.EVENT_INIT_D {
-			for j := 0; j < len(event.Targets); j++ {
-				if event.Targets[j] == subscribers[i].Name {
-					send = true
-					break
-				}
-			}
-			if !send && event.Type == sockets.EVENT_INIT_D && subscribers[i].Type == "watch" {
-				send = true
-				actPlay = true
-			}
-		} else if event.Type == sockets.EVENT_HP || event.Type == sockets.EVENT_INIT {
-			if subscribers[i].Type == "watch" {
-				send = true
-			}
-		} else {
+		watch := subscribers[i].Type == "watch"
+		switch event.Type {
+		case sockets.EVENT_JOIN:
 			send = true
+		case sockets.EVENT_LEAVE:
+			send = true
+		case sockets.EVENT_NOTE:
+			send = FindInSlice(event.Targets, subscribers[i])
+		case sockets.EVENT_LONG:
+			send = FindInSlice(event.Targets, subscribers[i])
+		case sockets.EVENT_INIT_D:
+			if watch {
+				send = true
+			} else {
+				send = FindInSlice(event.Targets, subscribers[i])
+			}
+		case sockets.EVENT_HP:
+			if watch {
+				send = true
+			} else {
+				send = FindInSlice(event.Targets, subscribers[i])
+			}
+		case sockets.EVENT_INIT:
+			if watch {
+				send = true
+			}
 		}
 
 		if send {
-			var sockMes SocketMessage
-			if !actPlay {
-				sockMes = SocketMessage{Type: event.Type, Player: event.Player, Data: event.Data}
+			var data []byte
+			if !watch {
+				sockMes := SocketMessage{Type: event.Type, Player: event.Player, Data: event.Data}
+				data, _ = json.Marshal(sockMes)
 			} else {
-				messageData, err := json.Marshal(event.Targets)
-				if err == nil {
-					sockMes = SocketMessage{Type: event.Type, Player: event.Player, Data: string(messageData)}
-				} else {
-					return
-				}
+				sockMes := SocketWatchMessage{Type: event.Type, Player: event.Player, Players: event.Targets, Data: event.Data}
+				data, _ = json.Marshal(sockMes)
 			}
-			data, err := json.Marshal(sockMes)
-			if err != nil {
-				beego.Error("Fail to marshal event:", err)
+			if len(data) == 0 {
 				return
 			}
 			ws := subscribers[i].Conn
@@ -208,4 +230,13 @@ func broadcastWebSocket(event sockets.Event) {
 			}
 		}
 	}
+}
+
+func FindInSlice(targets []string, sub Subscriber) bool {
+	for j := 0; j < len(targets); j++ {
+		if targets[j] == sub.Name {
+			return true
+		}
+	}
+	return false
 }

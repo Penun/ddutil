@@ -4,11 +4,13 @@
 		$scope.char = {};
 		this.inText = {};
 		this.action = {};
+		this.inpForm = {};
 		$scope.backStep = $scope.curStep = 1;
 		this.textareaReq = true;
 		$scope.activeNote = "";
 		this.actionText = "";
 		this.inTextText = "";
+		this.inputText = "";
 
 		angular.element(document).ready(function(){
 			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=master&uname=DM');
@@ -77,8 +79,7 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			this.inText = {};
-			this.inTextText = "";
+			this.ClearForm(2);
 			$scope.SetStep(1, true);
 		};
 
@@ -113,8 +114,44 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			this.action = {};
-			this.actionText = "";
+			this.ClearForm(3);
+			$scope.SetStep(1, true);
+		};
+
+		this.InputSet = function(inp){
+			this.inputText = inp;
+			$scope.SetStep(4, true);
+		};
+
+		this.Input = function(){
+			if (typeof this.inpForm.players === 'undefined' || this.inpForm.players.length == 0){
+				var subSel = document.getElementById("subSelInp");
+				subSel.focus();
+				return;
+			}
+			if (typeof this.inpForm.input === 'undefined' || this.inpForm.input <= 0){
+				var inpIn = document.getElementById("inpIn");
+				inpIn.focus();
+				return;
+			}
+			var type = "";
+			switch(this.inputText){
+				case "Heal":
+					type = "hp";
+					break;
+				default:
+					return;
+			}
+			var sendData = {
+				type: type,
+				data: {
+					players: this.inpForm.players,
+					message: String(this.inpForm.input)
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+			this.ClearForm(4);
 			$scope.SetStep(1, true);
 		};
 
@@ -132,6 +169,10 @@
 				case 3:
 					this.action = {};
 					this.actionText = "";
+					break;
+				case 4:
+					this.inpForm = {};
+					this.inputText = "";
 					break;
 				default:
 					return;
