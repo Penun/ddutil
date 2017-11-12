@@ -10,6 +10,7 @@
 				<p class="p_menu"><button ng-click="mCont.InTextSet('Note')">Note</button></p>
 				<p class="p_inline"><button ng-click="mCont.ActionSet('Initiative')">Initiative</button></p>
 				<p class="p_menu"><button ng-click="mCont.InputSet('Heal')">Heal</button></p>
+				<p class="p_inline"><button ng-click="mCont.ActionSet('Longrest')">Longrest</button></p>
             </div>
 			<div ng-show="mCont.ShowStep(2)" class="sixty_he">
 				<p class="s_ws_p_inline"><button ng-click="mCont.ClearForm(2)">Cancel</button></p>

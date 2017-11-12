@@ -18,6 +18,8 @@
 							if (ret.data.result[i].type == "master"){
 								ret.data.result.splice(i, 1);
 								i--;
+							} else if (typeof ret.data.result[i].initiative === 'undefined'){
+								ret.data.result[i].initiative = 0;
 							}
 						}
 						if ($scope.players.length == 0){
@@ -25,6 +27,7 @@
 						} else {
 							$scope.players.push(ret.data.result);
 						}
+						$scope.SortList($scope.players, "initiative");
 					}
 				});
 			}
@@ -35,6 +38,7 @@
 			switch (data.type) {
 				case 0: // JOIN
 					if (data.player.type == "play"){
+						data.player.initiative = 0; 
 						$scope.players.push(data.player);
 					}
 					break;
@@ -76,6 +80,7 @@
 							break;
 						}
 					}
+					$scope.SortList($scope.players, "initiative");
 					break;
 				case 6: // INITIATIVE DM RESET
 					for (var i = 0; i < data.players.length; i++){
@@ -86,9 +91,22 @@
 							}
 						}
 					}
+					$scope.SortList($scope.players, "initiative");
 					break;
 			}
 			$scope.$apply();
+		};
+
+		$scope.SortList = function(list, varName){
+			for (var i = 0; i < list.length; i++){
+				var minInd = i;
+				for (j = i; j < list.length; ++j){
+					if (list[j][varName] > list[minInd][varName]){
+						minInd = j;
+					}
+				}
+				[list[i], list[minInd]] = [list[minInd], list[i]];
+			}
 		};
 	}]);
 })();
