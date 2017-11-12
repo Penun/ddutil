@@ -33,31 +33,50 @@
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
 			switch (data.type) {
-			case 0: // JOIN
-				if (data.player.type == "play"){
-					$scope.players.push(data.player);
-				}
-				break;
-			case 1: // LEAVE
-				for (var i = 0; i < $scope.players.length; i++){
-					if ($scope.players[i].name == data.player.name){
-						$scope.players.splice(i, 1);
-						break;
+				case 0: // JOIN
+					if (data.player.type == "play"){
+						$scope.players.push(data.player);
 					}
-				}
-				break;
-			case 4: // HP
-				for (var i = 0; i < $scope.players.length; i++){
-					if ($scope.players[i].name == data.player.name){
-						if (typeof $scope.players[i].hp === 'undefined'){
-							$scope.players[i].hp = Number(data.data);
-						} else {
-							$scope.players[i].hp += Number(data.data);
+					break;
+				case 1: // LEAVE
+					for (var i = 0; i < $scope.players.length; i++){
+						if ($scope.players[i].name == data.player.name){
+							$scope.players.splice(i, 1);
+							break;
 						}
-						break;
 					}
-				}
-				break;
+					break;
+				case 4: // HP
+					for (var i = 0; i < $scope.players.length; i++){
+						if ($scope.players[i].name == data.player.name){
+							if (typeof $scope.players[i].hp === 'undefined'){
+								$scope.players[i].hp = Number(data.data);
+							} else {
+								$scope.players[i].hp += Number(data.data);
+							}
+							break;
+						}
+					}
+					break;
+				case 5: // INITIATIVE
+					for (var i = 0; i < $scope.players.length; i++){
+						if ($scope.players[i].name == data.player.name){
+							$scope.players[i].initiative = Number(data.data);
+							break;
+						}
+					}
+					break;
+				case 6:
+					var inData = JSON.parse(data.data);
+					for (var i = 0; i < inData.length; i++){
+						for (var j = 0; j < $scope.players.length; j++){
+							if ($scope.players[j].name == inData[i]){
+								$scope.players[j].initiative = 0;
+								break;
+							}
+						}
+					}
+					break;
 			}
 			$scope.$apply();
 		};

@@ -8,6 +8,8 @@ const (
 	EVENT_NOTE
 	EVENT_LONG
 	EVENT_HP
+	EVENT_INIT
+	EVENT_INIT_D
 )
 
 type Event struct {

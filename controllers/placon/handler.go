@@ -20,6 +20,7 @@ type Subscriber struct {
 
 type StatBlock struct {
 	HP int `json:"hp"`
+	Initiative int `json:"initiative"`
 }
 
 var (

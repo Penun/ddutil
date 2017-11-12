@@ -2,25 +2,18 @@
 	var app = angular.module('ddcharL', []);
 	app.controller('mainController', ['$window', '$scope', '$http', '$timeout', function($window, $scope, $http, $timeout){
 		$scope.char = {};
-		$scope.note = {};
-		$scope.showMenu = false;
+		this.inText = {};
+		this.action = {};
 		$scope.backStep = $scope.curStep = 1;
-		$scope.textareaReq = true;
+		this.textareaReq = true;
 		$scope.activeNote = "";
-		this.lastNote = 0;
+		this.actionText = "";
+		this.inTextText = "";
 
 		angular.element(document).ready(function(){
 			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=master&uname=DM');
 			$timeout($scope.SetupSocket, 30);
 		});
-
-		$scope.ToggleMenu = function(){
-			if ($scope.showMenu){
-				$scope.showMenu = false;
-			} else {
-				$scope.showMenu = true;
-			}
-		};
 
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
@@ -40,36 +33,10 @@
 				break;
 			case 2: // NOTE
 				$scope.activeNote += data.player.name + ' says: "' + data.data + '"\n';
-				$scope.SetStep(0, false);
+				$scope.SetStep(10, false);
 				break;
 			}
 			$scope.$apply();
-		};
-
-		this.SendNote = function(){
-			if (typeof $scope.note.players === 'undefined' || $scope.note.players.length == 0){
-				var subSel = document.getElementById("subSel");
-				subSel.focus();
-				return;
-			}
-			if (typeof $scope.note.message === 'undefined' || $scope.note.message.length == 0){
-				var noteMessage = document.getElementById("noteMessage");
-				noteMessage.focus();
-				return;
-			}
-
-			var sendData = {
-				type: "note",
-				data: {
-					players: $scope.note.players,
-					message: $scope.note.message
-				}
-			};
-			sendData = JSON.stringify(sendData);
-			$scope.sock.send(sendData);
-			this.lastNote = Date.now();
-			$scope.note = {};
-			$scope.SetStep(1, true);
 		};
 
 		this.ReadNote = function(){
@@ -77,27 +44,98 @@
 			$scope.SetStep($scope.backStep, false);
 		};
 
-		this.Longrest = function(){
+		this.InTextSet = function(inT){
+			this.inTextText = inT;
+			$scope.SetStep(2, true);
+		};
+
+		this.InText = function(){
+			if (typeof this.inText.players === 'undefined' || this.inText.players.length == 0){
+				var subSel = document.getElementById("subSelInText");
+				subSel.focus();
+				return;
+			}
+			if (typeof this.inText.message === 'undefined' || this.inText.message.length == 0){
+				var inTextMessage = document.getElementById("inTextMessage");
+				inTextMessage.focus();
+				return;
+			}
+			var type = "";
+			switch(this.inTextText){
+				case "Note":
+					type = "note";
+					break;
+				default:
+					return;
+			}
 			var sendData = {
-				type: "longrest",
-				data: JSON.stringify({
-					players: $scope.longrest.players
-				})
+				type: "note",
+				data: {
+					players: this.inText.players,
+					message: this.inText.message
+				}
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
+			this.inText = {};
+			this.inTextText = "";
 			$scope.SetStep(1, true);
 		};
 
-		this.FocusKi = function(){
-			if ($scope.char.hasKi){
-				var charKi = document.getElementById("charKi");
-				charKi.focus();
+		this.ActionSet = function(act){
+			this.actionText = act;
+			$scope.SetStep(3, true);
+		};
+
+		this.Action = function(){
+			if (typeof this.action.players === 'undefined' || this.action.players.length == 0){
+				var subSel = document.getElementById("subSelAct");
+				subSel.focus();
+				return;
 			}
+			var type = "";
+			switch(this.actionText){
+				case "Initiative":
+					type = "initiative_d";
+					break;
+				case "Longrest":
+					type = "longrest";
+					break;
+				default:
+					return;
+			}
+			var sendData = {
+				type: type,
+				data: {
+					players: this.action.players,
+					message: "action"
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+			this.action = {};
+			this.actionText = "";
+			$scope.SetStep(1, true);
 		};
 
 		this.ShowStep = function(step){
 			return $scope.curStep == step;
+		};
+
+		this.ClearForm = function(form){
+			$scope.SetStep(1, true);
+			switch(form){
+				case 2:
+					this.inText = {};
+					this.inTextText = "";
+					break;
+				case 3:
+					this.action = {};
+					this.actionText = "";
+					break;
+				default:
+					return;
+			}
 		};
 
 		$scope.SetupSocket = function(){
@@ -121,9 +159,6 @@
 			$scope.curStep = step;
 			if (upBack){
 				$scope.backStep = step;
-			}
-			if ($scope.showMenu){
-				$scope.ToggleMenu();
 			}
 		};
 	}]);

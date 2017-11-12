@@ -2,15 +2,16 @@
 	var app = angular.module('ddcharL', []);
 	app.controller('mainController', ['$window', '$scope', '$http', '$timeout', function($window, $scope, $http, $timeout){
 		$scope.char = {};
-		this.curChar = {};
+		$scope.curChar = {initiative: 0};
 		$scope.note = {};
-		this.damForm = {};
+		this.inpForm = {};
 		$scope.longrest = {};
 		$scope.backStep = $scope.curStep = 1;
 		$scope.textareaReq = true;
 		$scope.activeNote = "";
 		this.lastNote = 0;
 		$scope.charNameSug = "Name";
+		this.formInput = "";
 
 		this.AddChar = function(){
 			$scope.char.name = $scope.char.name.trim();
@@ -25,7 +26,8 @@
 				charHp.focus();
 				return;
 			}
-			this.curChar = $scope.char;
+			$scope.curChar = $scope.char;
+			$scope.curChar.initiative = 0;
 			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=play&uname=' + $scope.char.name);
 			$timeout(this.SetupSocket, 30);
 		};
@@ -63,23 +65,28 @@
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
 			switch (data.type) {
-			case 0: // JOIN
-				if (data.player.type != "watch" && data.player.name != $scope.char.name){
-					$scope.subs.push(data.player);
-				}
-				break;
-			case 1: // LEAVE
-				for (var i = 0; i < $scope.subs.length; i++){
-					if ($scope.subs[i].name == data.player.name){
-						$scope.subs.splice(i, 1);
-						break;
+				case 0: // JOIN
+					if (data.player.type != "watch" && data.player.name != $scope.char.name){
+						$scope.subs.push(data.player);
 					}
-				}
-				break;
-			case 2: // NOTE
-				$scope.activeNote += data.player.name + ' says: "' + data.data + '"\n';
-				$scope.SetStep(10, false);
-				break;
+					break;
+				case 1: // LEAVE
+					for (var i = 0; i < $scope.subs.length; i++){
+						if ($scope.subs[i].name == data.player.name){
+							$scope.subs.splice(i, 1);
+							break;
+						}
+					}
+					break;
+				case 2: // NOTE
+					$scope.activeNote += data.player.name + ' says: "' + data.data + '"\n';
+					$scope.SetStep(10, false);
+					break;
+				case 6:
+					$scope.curChar.initiative = 0;
+					break;
+				default:
+					return;
 			}
 			$scope.$apply();
 		};
@@ -121,21 +128,72 @@
 			$scope.SetStep($scope.backStep, false);
 		};
 
-		this.Damage = function(){
-			if (this.damForm.damage > 0){
-				this.damForm.damage = -this.damForm.damage;
+		this.InputSet = function(inp){
+			this.formInput = inp;
+			this.TargetFormInput();
+		};
+
+		this.TargetFormInput = function(){
+			$scope.SetStep(4, false);
+			$timeout(function(){
+				var inpIn = document.getElementById("inpIn");
+				inpIn.focus();
+			}, 50);
+		};
+
+		this.Input = function(){
+			if (typeof this.inpForm.input === 'undefined'){
+				var inpIn = document.getElementById("inpIn");
+				inpIn.focus();
+				return;
 			}
-			this.curChar.hp += this.damForm.damage;
+			switch(this.formInput){
+				case "Damage":
+					this.Damage();
+					break;
+				case "Initiative":
+					this.Initiative();
+					break;
+			}
+		};
+
+		this.Damage = function(){
+			if (this.inpForm.input > 0){
+				this.inpForm.input = -this.inpForm.input;
+			}
+			$scope.curChar.hp += this.inpForm.input;
 			var sendData = {
 				type: "hp",
 				data: {
-					message: String(this.damForm.damage)
+					message: String(this.inpForm.input)
 				}
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
+			this.ClearForm();
+		};
+
+		this.Initiative = function(){
+			if (this.inpForm.input <= 0){
+				this.TargetFormInput();
+				return;
+			}
+			$scope.curChar.initiative = this.inpForm.input;
+			var sendData = {
+				type: "initiative",
+				data: {
+					message: String(this.inpForm.input)
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+			this.ClearForm();
+		};
+
+		this.ClearForm = function(){
 			$scope.SetStep($scope.backStep, false);
-			this.damForm = {};
+			this.formInput = "";
+			this.inpForm = {};
 		};
 
 		this.FocusKi = function(){

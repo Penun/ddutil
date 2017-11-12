@@ -40,6 +40,7 @@ type PSub struct {
 	Name string `json:"name"`
     Type string `json:"type"`
     HP int `json:"hp"`
+ 	Initiative int `json:"initiative"`
 }
 
 func (this *WebSocketController) Get() {
@@ -103,20 +104,38 @@ func (this *WebSocketController) Join() {
 		var conReq ControllerReq
 		err = json.Unmarshal(req, &conReq)
 		if err == nil {
+			var sub *Subscriber
+			for i := 0; i < len(subscribers); i++ {
+				if uname == subscribers[i].Name {
+					sub = &subscribers[i]
+				}
+			}
 			switch conReq.Type {
 			case "note":
 				publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "longrest":
 				publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "hp":
-				for i := 0; i < len(subscribers); i++ {
-					if uname == subscribers[i].Name {
-						hp, _ := strconv.Atoi(conReq.Data.Message)
-						subscribers[i].Stats.HP += hp
+				hp, _ := strconv.Atoi(conReq.Data.Message)
+				sub.Stats.HP += hp
+				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative":
+				init, _ := strconv.Atoi(conReq.Data.Message)
+				sub.Stats.Initiative = init
+				publish <- newEvent(sockets.EVENT_INIT, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative_d":
+				for i := 0; i < len(conReq.Data.Players); i++ {
+					for j := 0; j < len(subscribers); j++ {
+						if (subscribers[j].Name == conReq.Data.Players[i]){
+							subscribers[j].Stats.Initiative = 0;
+							break;
+						}
 					}
 				}
-				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+				publish <- newEvent(sockets.EVENT_INIT_D, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			}
+		} else {
+			beego.Error(err.Error())
 		}
 	}
 
@@ -128,7 +147,7 @@ func (this *WebSocketController) Subs() {
 	if sub_len := len(subscribers); sub_len > 0 {
 		for i := 0; i < sub_len; i++ {
 			if subscribers[i].Type != "watch" {
-				psub := PSub{Name: subscribers[i].Name, Type: subscribers[i].Type, HP: subscribers[i].Stats.HP}
+				psub := PSub{Name: subscribers[i].Name, Type: subscribers[i].Type, HP: subscribers[i].Stats.HP, Initiative: subscribers[i].Stats.Initiative}
 				subs = append(subs, psub)
 			}
 		}
@@ -143,14 +162,19 @@ func (this *WebSocketController) Subs() {
 func broadcastWebSocket(event sockets.Event) {
 	for i := 0; i < len(subscribers); i++ {
 		send := false
-		if event.Type == sockets.EVENT_NOTE || event.Type == sockets.EVENT_LONG {
+		actPlay := false
+		if event.Type == sockets.EVENT_NOTE || event.Type == sockets.EVENT_LONG || event.Type == sockets.EVENT_INIT_D {
 			for j := 0; j < len(event.Targets); j++ {
 				if event.Targets[j] == subscribers[i].Name {
 					send = true
 					break
 				}
 			}
-		} else if event.Type == sockets.EVENT_HP {
+			if !send && event.Type == sockets.EVENT_INIT_D && subscribers[i].Type == "watch" {
+				send = true
+				actPlay = true
+			}
+		} else if event.Type == sockets.EVENT_HP || event.Type == sockets.EVENT_INIT {
 			if subscribers[i].Type == "watch" {
 				send = true
 			}
@@ -159,7 +183,17 @@ func broadcastWebSocket(event sockets.Event) {
 		}
 
 		if send {
-			sockMes := SocketMessage{Type: event.Type, Player: event.Player, Data: event.Data}
+			var sockMes SocketMessage
+			if !actPlay {
+				sockMes = SocketMessage{Type: event.Type, Player: event.Player, Data: event.Data}
+			} else {
+				messageData, err := json.Marshal(event.Targets)
+				if err == nil {
+					sockMes = SocketMessage{Type: event.Type, Player: event.Player, Data: string(messageData)}
+				} else {
+					return
+				}
+			}
 			data, err := json.Marshal(sockMes)
 			if err != nil {
 				beego.Error("Fail to marshal event:", err)

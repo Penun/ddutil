@@ -34,7 +34,8 @@
             <div ng-show="mCont.ShowStep(2)" class="sixty_he">
 				<p class="s_ws_p_inline"><button ng-click="SetStep(0, false)">Menu</button></p>
                 <p class="s_ws_p_inline"><label><b>{{"{{char.name}}"}}</b></label></p>
-                <p class="s_ws_p_inline"><label><b>HP:</b> {{"{{mCont.curChar.hp}}"}}</label>  ~~~~~~  <button ng-click="SetStep(4, false)" class="inline_butt">-</button></p>
+                <p class="s_ws_p_inline"><label><b>Initiative:</b></label> {{"{{curChar.initiative}}"}} <button ng-show="curChar.initiative == 0" ng-click="mCont.InputSet('Initiative')" class="inline_butt">Set</button></p>
+                <p class="s_ws_p_inline"><label><b>HP:</b></label> {{"{{curChar.hp}}"}} <button ng-click="mCont.InputSet('Damage')" class="inline_butt">-</button></p>
             </div>
 			<div ng-show="mCont.ShowStep(3)" class="sixty_he">
 				<p class="s_ws_p_inline"><button ng-click="SetStep(0, false)">Menu</button></p>
@@ -45,10 +46,10 @@
 				</form>
 			</div>
 			<div ng-show="mCont.ShowStep(4)" class="sixty_he">
-				<p class="s_ws_p_inline"><button ng-click="SetStep(backStep, false)">Cancel</button></p>
-				<form name="damForm" id="damForm" novalidate>
-					<p class="s_ws_p_inline"><label for="damIn"><b>Damage:</b></label> <input type="number" name="damIn" id="damIn" ng-model="mCont.damForm.damage" placeholder="0" required/></p>
-					<button ng-show="damForm.$valid" ng-click="mCont.Damage()">Damage</button>
+				<p class="s_ws_p_inline"><button ng-click="mCont.ClearForm()">Cancel</button></p>
+				<form name="inpForm" id="inpForm" novalidate>
+					<p class="s_ws_p_inline"><label for="damIn"><b>{{"{{mCont.formInput}}"}}:</b></label> <input type="number" name="inpIn" id="inpIn" ng-model="mCont.inpForm.input" placeholder="0" required/></p>
+					<button ng-show="inpForm.$valid" ng-click="mCont.Input()">{{"{{mCont.formInput}}"}}</button>
 				</form>
             </div>
 		</div>
