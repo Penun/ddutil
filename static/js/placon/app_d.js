@@ -2,6 +2,7 @@
 	var app = angular.module('ddcharL', []);
 	app.controller('mainController', ['$window', '$scope', '$http', '$timeout', function($window, $scope, $http, $timeout){
 		$scope.char = {};
+		$scope.subs = [];
 		this.inText = {};
 		this.action = {};
 		this.inpForm = {};
@@ -11,11 +12,23 @@
 		this.actionText = "";
 		this.inTextText = "";
 		this.inputText = "";
+		this.startInit = false;
 
 		angular.element(document).ready(function(){
-			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/join?type=master&uname=DM');
+			$scope.sock = new WebSocket('ws://' + window.location.host + '/track/joinm');
 			$timeout($scope.SetupSocket, 30);
 		});
+
+		$scope.SetupSocket = function(){
+			if ($scope.sock.readyState === 1){
+				$scope.sock.onmessage = $scope.HandleMessage;
+				$http.get("/track/subs?type=master").then(function(ret){
+					if (ret.data.success){
+						$scope.subs = ret.data.result;
+					}
+				});
+			}
+		};
 
 		$scope.HandleMessage = function(event){
 			var data = JSON.parse(event.data);
@@ -79,8 +92,7 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			this.ClearForm(2);
-			$scope.SetStep(1, true);
+			this.ClearForm(2, true);
 		};
 
 		this.ActionSet = function(act){
@@ -114,8 +126,11 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			this.ClearForm(3);
-			$scope.SetStep(1, true);
+			if (type === "longrest"){
+				this.ClearForm(3, true);
+			} else {
+				this.ClearForm(3, false);
+			}
 		};
 
 		this.InputSet = function(inp){
@@ -151,49 +166,81 @@
 			};
 			sendData = JSON.stringify(sendData);
 			$scope.sock.send(sendData);
-			this.ClearForm(4);
-			$scope.SetStep(1, true);
+			this.ClearForm(4, true);
 		};
 
-		this.ShowStep = function(step){
-			return $scope.curStep == step;
-		};
-
-		this.ClearForm = function(form){
-			$scope.SetStep(1, true);
+		this.ClearForm = function(form, move){
 			switch(form){
 				case 2:
 					this.inText = {};
-					this.inTextText = "";
+					if (move){
+						this.inTextText = "";
+						$scope.SetStep(1, true);
+					}
 					break;
 				case 3:
 					this.action = {};
-					this.actionText = "";
+					if (move){
+						this.actionText = "";
+						$scope.SetStep(1, true);
+					}
 					break;
 				case 4:
 					this.inpForm = {};
-					this.inputText = "";
+					if (move){
+						this.inputText = "";
+						$scope.SetStep(1, true);
+					}
 					break;
 				default:
 					return;
 			}
 		};
 
-		$scope.SetupSocket = function(){
-			if ($scope.sock.readyState === 1){
-				$scope.sock.onmessage = $scope.HandleMessage;
-				$http.get("/track/subs").then(function(ret){
-					if (ret.data.success){
-						for (var i = 0; i < ret.data.result.length; i++){
-							if (ret.data.result[i].name == "DM" || ret.data.result[i].type == "master"){
-								ret.data.result.splice(i, 1);
-								break;
-							}
-						}
-						$scope.subs = ret.data.result;
-					}
-				});
+		this.StartInit = function(){
+			if (this.startInit){
+				this.startInit = false;
+			} else {
+				this.startInit = true;
 			}
+			var sendData = {
+				type: "initiative_s",
+				data: {}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+		};
+
+		this.NextTurn = function(){
+			if (!this.startInit){
+				return;
+			}
+			var sendData = {
+				type: "initiative_t",
+				data: {
+					message: "+"
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+		};
+
+		this.PrevTurn = function(){
+			if (!this.startInit){
+				return;
+			}
+			var sendData = {
+				type: "initiative_t",
+				data: {
+					message: "-"
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
+		};
+
+		this.ShowStep = function(step){
+			return $scope.curStep == step;
 		};
 
 		$scope.SetStep = function(step, upBack){

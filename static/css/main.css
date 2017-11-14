@@ -455,7 +455,7 @@ input.found {
 	background-image: url("/static/img/pencil.png");
 	background-repeat: no-repeat;
 	background-position: center bottom;
-	background-size: 100%;
+	background-size: 100% 10%;
 	cursor: pointer;
 	text-align: center;
 	font-size: 150%;
@@ -514,6 +514,26 @@ button:active {
 	padding: 0.25em 0.75em;
 	float: none;
 	width: 3em;
+}
+
+.activePlayer {
+	background-image: url("/static/img/pencil_l.png");
+	background-size: 100% 100%;
+	font-size: 1.35em;
+	margin: 5px auto;
+	height: 25px;
+	color: #FFFFC1;
+	font-weight: 200;
+}
+
+.player {
+	font-size: 1.35em;
+	margin: 5px auto;
+	height: 25px;
+	background-image: url("/static/img/pencil.png");
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	background-size: 100% 10%;
 }
 
 .characterBlock {

@@ -10,6 +10,8 @@ const (
 	EVENT_HP
 	EVENT_INIT
 	EVENT_INIT_D
+	EVENT_INIT_S
+	EVENT_INIT_T
 )
 
 type Event struct {

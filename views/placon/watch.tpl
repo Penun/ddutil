@@ -4,10 +4,10 @@
 		<div class="page sc_back">
             <div class="sixty_he">
 				<ul>
-					<li ng-repeat="(ind, play) in players">
-                		<p><label><b>{{"{{play.name}}"}}</b></label></p>
-						<p><label><b>Init:</b> {{"{{play.initiative}}"}}</label></p>
-                		<p><label><b>HP:</b> {{"{{play.hp}}"}}</label></p>
+					<li ng-repeat="(ind, play) in players" ng-class="{activePlayer: startInit && play.isTurn, player: !play.isTurn || !startInit }">
+                		<span><b>{{"{{play.name}}"}}</b></span>
+						<span><b>Init:</b> {{"{{play.initiative}}"}}</span>
+                		<span><b>HP:</b> {{"{{play.hp}}"}}</span>
 					</li>
 				</ul>
             </div>

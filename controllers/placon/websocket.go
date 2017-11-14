@@ -46,6 +46,8 @@ type SocketWatchMessage struct {
 var (
 	players = make([]*sockets.Player, 0)
 	master = false
+	curInitInd = 0
+	initStarted = false
 )
 
 func (this *WebSocketController) Get() {
@@ -64,6 +66,7 @@ func (this *WebSocketController) Master() {
 func (this *WebSocketController) Join() {
 	uname := ""
 	ws_type := this.GetString("type")
+	var curPlay sockets.Player
 	if ws_type == "play" || ws_type == "master" {
 		uname = this.GetString("uname")
 		if len(uname) == 0 {
@@ -76,6 +79,16 @@ func (this *WebSocketController) Join() {
 				return
 			}
 		}
+		if ws_type == "play" {
+			curPlay = sockets.Player{uname, 0, 0}
+			players = append(players, &curPlay)
+		} else {
+			if !master {
+				master = true
+			} else {
+				return
+			}
+		}
 	} else if ws_type == "watch" {
 		uname = "watch" + strconv.FormatInt(time.Now().Unix(), 10)
 	} else {
@@ -83,7 +96,7 @@ func (this *WebSocketController) Join() {
 		return
 	}
 
-	//this.TplName = "placon/end.html"
+	this.TplName = "placon/end.html"
 
 	// Upgrade from http request to WebSocket.
 	ws, err := websocket.Upgrade(this.Ctx.ResponseWriter, this.Ctx.Request, nil, 1024, 1024)
@@ -96,15 +109,64 @@ func (this *WebSocketController) Join() {
 	}
 
 	// Join update channel.
-	Join(uname, ws_type, ws)
+	go Join(uname, ws_type, ws)
+	defer SetupLeave(uname, curPlay)
 
-	var curPlay sockets.Player
-	if ws_type == "play" {
-		curPlay = sockets.Player{uname, 0, 0}
-		players = append(players, &curPlay)
+	// Message receive loop.
+	for {
+		_, req, err := ws.ReadMessage()
+		if err != nil {
+			return
+		}
+
+		var conReq ControllerReq
+		err = json.Unmarshal(req, &conReq)
+		if err == nil {
+			switch conReq.Type {
+			case "note":
+				publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "hp":
+				hp, _ := strconv.Atoi(conReq.Data.Message)
+				curPlay.HP += hp
+				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative":
+				init, _ := strconv.Atoi(conReq.Data.Message)
+				curPlay.Initiative = init
+				go SortPlayerInit()
+				publish <- newEvent(sockets.EVENT_INIT, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			}
+		} else {
+			beego.Error(err.Error())
+		}
+	}
+}
+
+func (this *WebSocketController) JoinM() {
+	if !master{
+		master = true
+	} else {
+		this.Redirect("/", 302)
+		return
 	}
 
-	defer SetupLeave(uname, curPlay)
+	uname := "DM"
+	ws_type := "master"
+
+	this.TplName = "placon/end.html"
+
+	// Upgrade from http request to WebSocket.
+	ws, err := websocket.Upgrade(this.Ctx.ResponseWriter, this.Ctx.Request, nil, 1024, 1024)
+	if _, ok := err.(websocket.HandshakeError); ok {
+		http.Error(this.Ctx.ResponseWriter, "Not a websocket handshake", 400)
+		return
+	} else if err != nil {
+		beego.Error("Cannot setup WebSocket connection:", err)
+		return
+	}
+
+	// Join update channel.
+	go Join(uname, ws_type, ws)
+	defer SetupLeaveM(uname)
 
 	// Message receive loop.
 	for {
@@ -123,23 +185,15 @@ func (this *WebSocketController) Join() {
 				publish <- newEvent(sockets.EVENT_LONG, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "hp":
 				hp, _ := strconv.Atoi(conReq.Data.Message)
-				if ws_type == "play" {
-					curPlay.HP += hp
-				} else {
-					for i := 0; i < len(conReq.Data.Players); i++ {
-						for j := 0; j < len(players); j++ {
-							if (players[j].Name == conReq.Data.Players[i]){
-								players[j].HP += hp;
-								break;
-							}
+				for i := 0; i < len(conReq.Data.Players); i++ {
+					for j := 0; j < len(players); j++ {
+						if (players[j].Name == conReq.Data.Players[i]){
+							players[j].HP += hp;
+							break;
 						}
 					}
 				}
 				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
-			case "initiative":
-				init, _ := strconv.Atoi(conReq.Data.Message)
-				curPlay.Initiative = init
-				publish <- newEvent(sockets.EVENT_INIT, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "initiative_d":
 				for i := 0; i < len(conReq.Data.Players); i++ {
 					for j := 0; j < len(players); j++ {
@@ -149,20 +203,40 @@ func (this *WebSocketController) Join() {
 						}
 					}
 				}
+				go SortPlayerInit()
 				publish <- newEvent(sockets.EVENT_INIT_D, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative_s":
+				if initStarted {
+					initStarted = false
+				} else {
+					initStarted = true
+				}
+				curInitInd = 0
+				publish <- newEvent(sockets.EVENT_INIT_S, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative_t":
+				if conReq.Data.Message == "+" {
+					curInitInd++
+				} else {
+					curInitInd--
+				}
+				publish <- newEvent(sockets.EVENT_INIT_T, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			}
 		} else {
 			beego.Error(err.Error())
 		}
 	}
-	return
 }
 
 func (this *WebSocketController) Subs() {
 	resp := GetSubsResp{Success: false}
-	if sub_len := len(players); sub_len > 0 {
+	if len(players) > 0 {
 		resp.Result = players
 		resp.Success = true
+	}
+	typ := this.GetString("type")
+	if typ == "play" && master {
+		tempPlay := sockets.Player{Name: "DM"}
+		resp.Result = append(resp.Result, &tempPlay)
 	}
 	this.Data["json"] = resp
 	this.ServeJSON()
@@ -198,6 +272,16 @@ func broadcastWebSocket(event sockets.Event) {
 			if watch {
 				send = true
 			}
+		case sockets.EVENT_INIT_S:
+			if watch {
+				send = true
+			} else if players[curInitInd].Name == subscribers[i].Name {
+				send = true
+			}
+		case sockets.EVENT_INIT_T:
+			if watch {
+				send = true
+			}
 		}
 
 		if send {
@@ -225,16 +309,24 @@ func broadcastWebSocket(event sockets.Event) {
 
 func SetupLeave(uname string, play sockets.Player) {
 	Leave(uname)
-	playLen := len(players)
-	for i := 0; i < playLen; i++ {
-		if players[i].Name == play.Name {
-			if i == playLen - 1 {
-				players = players[:playLen-1]
-			} else {
-				players = append(players[:i], players[i+1:]...)
+	if play != (sockets.Player{}) {
+		playLen := len(players)
+		for i := 0; i < playLen; i++ {
+			if players[i].Name == play.Name {
+				if i == playLen - 1 {
+					players = players[:playLen-1]
+				} else {
+					players = append(players[:i], players[i+1:]...)
+				}
 			}
 		}
 	}
+}
+
+func SetupLeaveM(uname string) {
+	Leave(uname)
+	master = false
+	initStarted = false
 }
 
 func FindInSlice(targets []string, sub Subscriber) bool {
@@ -244,4 +336,20 @@ func FindInSlice(targets []string, sub Subscriber) bool {
 		}
 	}
 	return false
+}
+
+func SortPlayerInit() {
+	for  i := 0; i < len(players); i++ {
+		minInd := i
+		for j := i + 1; j < len(players); j++ {
+			if players[j].Initiative > players[minInd].Initiative {
+				minInd = j;
+			}
+		}
+		if minInd != i {
+			swap := players[i]
+			players[i] = players[minInd]
+			players[minInd] = swap
+		}
+	}
 }

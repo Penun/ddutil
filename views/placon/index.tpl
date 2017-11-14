@@ -4,9 +4,9 @@
 		<div class="page sc_back">
 			<div id="menu" class="sixty_he" ng-show="mCont.ShowStep(0)">
 				<ul>
-					<li class="clickable" ng-click="SetStep(backStep, false)">Close</li>
 					<li class="clickable" ng-click="SetStep(3, true)">Note</li>
 					<li class="clickable" ng-click="SetStep(2, true)">Stats</li>
+					<li class="clickable" ng-click="SetStep(backStep, false)">Cancel</li>
 				</ul>
 			</div>
 			<div ng-show="mCont.ShowStep(10)" class="sixty_he">

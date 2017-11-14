@@ -35,7 +35,7 @@
 		this.SetupSocket = function(){
 			if ($scope.sock.readyState === 1){
 				$scope.sock.onmessage = $scope.HandleMessage;
-				$http.get("/track/subs").then(function(ret){
+				$http.get("/track/subs?type=play").then(function(ret){
 					if (ret.data.success){
 						for (var i = 0; i < ret.data.result.length; i++){
 							if (ret.data.result[i].name == $scope.char.name){
