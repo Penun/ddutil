@@ -14,12 +14,18 @@ const (
 
 type Event struct {
 	Type EventType `json:"type"` // JOIN, LEAVE, NOTE
-	Player Player `json:"player"`
+	Sender Sender `json:"sender"`
 	Targets []string `json:"targets"`
 	Data string `json:"data"`
 }
 
 type Player struct {
     Name string `json:"name"`
-    Type string `json:"type"`
+	HP int `json:"hp"`
+	Initiative int `json:"initiative"`
+}
+
+type Sender struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }

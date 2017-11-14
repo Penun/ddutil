@@ -14,14 +14,6 @@
 				$scope.sock.onmessage = $scope.HandleMessage;
 				$http.get("/track/subs").then(function(ret){
 					if (ret.data.success){
-						for (var i = 0; i < ret.data.result.length; i++){
-							if (ret.data.result[i].type == "master"){
-								ret.data.result.splice(i, 1);
-								i--;
-							} else if (typeof ret.data.result[i].initiative === 'undefined'){
-								ret.data.result[i].initiative = 0;
-							}
-						}
 						if ($scope.players.length == 0){
 							$scope.players = ret.data.result;
 						} else {
@@ -38,7 +30,7 @@
 			switch (data.type) {
 				case 0: // JOIN
 					if (data.player.type == "play"){
-						data.player.initiative = 0; 
+						data.player.initiative = 0;
 						$scope.players.push(data.player);
 					}
 					break;

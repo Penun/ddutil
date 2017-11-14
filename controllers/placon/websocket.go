@@ -17,7 +17,7 @@ type WebSocketController struct {
 
 type GetSubsResp struct {
 	Success bool `json:"success"`
-    Result []PSub `json:"result"`
+    Result []*sockets.Player `json:"result"`
 }
 
 type ControllerReq struct {
@@ -32,24 +32,21 @@ type MultiMess struct {
 
 type SocketMessage struct {
 	Type sockets.EventType `json:"type"`
-	Player sockets.Player `json:"player"`
+	Player sockets.Sender `json:"player"`
 	Data string `json:"data"`
 }
 
 type SocketWatchMessage struct {
 	Type sockets.EventType `json:"type"`
-	Player sockets.Player `json:"player"`
+	Player sockets.Sender `json:"player"`
 	Players []string `json:"players"`
 	Data string `json:"data"`
 }
 
-type PSub struct {
-	Name string `json:"name"`
-    Type string `json:"type"`
-    HP int `json:"hp"`
- 	Initiative int `json:"initiative"`
-}
-
+var (
+	players = make([]*sockets.Player, 0)
+	master = false
+)
 
 func (this *WebSocketController) Get() {
 	this.TplName = "placon/index.tpl"
@@ -86,7 +83,7 @@ func (this *WebSocketController) Join() {
 		return
 	}
 
-	this.TplName = "placon/end.html"
+	//this.TplName = "placon/end.html"
 
 	// Upgrade from http request to WebSocket.
 	ws, err := websocket.Upgrade(this.Ctx.ResponseWriter, this.Ctx.Request, nil, 1024, 1024)
@@ -98,9 +95,16 @@ func (this *WebSocketController) Join() {
 		return
 	}
 
-	// Join chat room.
+	// Join update channel.
 	Join(uname, ws_type, ws)
-	defer Leave(uname)
+
+	var curPlay sockets.Player
+	if ws_type == "play" {
+		curPlay = sockets.Player{uname, 0, 0}
+		players = append(players, &curPlay)
+	}
+
+	defer SetupLeave(uname, curPlay)
 
 	// Message receive loop.
 	for {
@@ -112,12 +116,6 @@ func (this *WebSocketController) Join() {
 		var conReq ControllerReq
 		err = json.Unmarshal(req, &conReq)
 		if err == nil {
-			var sub *Subscriber
-			for i := 0; i < len(subscribers); i++ {
-				if uname == subscribers[i].Name {
-					sub = &subscribers[i]
-				}
-			}
 			switch conReq.Type {
 			case "note":
 				publish <- newEvent(sockets.EVENT_NOTE, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
@@ -126,12 +124,12 @@ func (this *WebSocketController) Join() {
 			case "hp":
 				hp, _ := strconv.Atoi(conReq.Data.Message)
 				if ws_type == "play" {
-					sub.Stats.HP += hp
+					curPlay.HP += hp
 				} else {
 					for i := 0; i < len(conReq.Data.Players); i++ {
-						for j := 0; j < len(subscribers); j++ {
-							if (subscribers[j].Name == conReq.Data.Players[i]){
-								subscribers[j].Stats.HP += hp;
+						for j := 0; j < len(players); j++ {
+							if (players[j].Name == conReq.Data.Players[i]){
+								players[j].HP += hp;
 								break;
 							}
 						}
@@ -140,13 +138,13 @@ func (this *WebSocketController) Join() {
 				publish <- newEvent(sockets.EVENT_HP, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "initiative":
 				init, _ := strconv.Atoi(conReq.Data.Message)
-				sub.Stats.Initiative = init
+				curPlay.Initiative = init
 				publish <- newEvent(sockets.EVENT_INIT, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "initiative_d":
 				for i := 0; i < len(conReq.Data.Players); i++ {
-					for j := 0; j < len(subscribers); j++ {
-						if (subscribers[j].Name == conReq.Data.Players[i]){
-							subscribers[j].Stats.Initiative = 0;
+					for j := 0; j < len(players); j++ {
+						if (players[j].Name == conReq.Data.Players[i]){
+							players[j].Initiative = 0;
 							break;
 						}
 					}
@@ -157,20 +155,13 @@ func (this *WebSocketController) Join() {
 			beego.Error(err.Error())
 		}
 	}
-
+	return
 }
 
 func (this *WebSocketController) Subs() {
-	var subs = make([]PSub, 0)
 	resp := GetSubsResp{Success: false}
-	if sub_len := len(subscribers); sub_len > 0 {
-		for i := 0; i < sub_len; i++ {
-			if subscribers[i].Type != "watch" {
-				psub := PSub{Name: subscribers[i].Name, Type: subscribers[i].Type, HP: subscribers[i].Stats.HP, Initiative: subscribers[i].Stats.Initiative}
-				subs = append(subs, psub)
-			}
-		}
-		resp.Result = subs
+	if sub_len := len(players); sub_len > 0 {
+		resp.Result = players
 		resp.Success = true
 	}
 	this.Data["json"] = resp
@@ -212,10 +203,10 @@ func broadcastWebSocket(event sockets.Event) {
 		if send {
 			var data []byte
 			if !watch {
-				sockMes := SocketMessage{Type: event.Type, Player: event.Player, Data: event.Data}
+				sockMes := SocketMessage{Type: event.Type, Player: event.Sender, Data: event.Data}
 				data, _ = json.Marshal(sockMes)
 			} else {
-				sockMes := SocketWatchMessage{Type: event.Type, Player: event.Player, Players: event.Targets, Data: event.Data}
+				sockMes := SocketWatchMessage{Type: event.Type, Player: event.Sender, Players: event.Targets, Data: event.Data}
 				data, _ = json.Marshal(sockMes)
 			}
 			if len(data) == 0 {
@@ -227,6 +218,20 @@ func broadcastWebSocket(event sockets.Event) {
 					// User disconnected.
 					unsubscribe <- subscribers[i].Name
 				}
+			}
+		}
+	}
+}
+
+func SetupLeave(uname string, play sockets.Player) {
+	Leave(uname)
+	playLen := len(players)
+	for i := 0; i < playLen; i++ {
+		if players[i].Name == play.Name {
+			if i == playLen - 1 {
+				players = players[:playLen-1]
+			} else {
+				players = append(players[:i], players[i+1:]...)
 			}
 		}
 	}

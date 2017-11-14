@@ -123,7 +123,7 @@
 			$scope.sock.send(sendData);
 			this.lastNote = Date.now();
 			$scope.note = {};
-			$scope.SetStep(2);
+			$scope.SetStep(2, true);
 		};
 
 		this.ReadNote = function(){
