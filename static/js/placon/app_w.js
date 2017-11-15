@@ -21,7 +21,15 @@
 						} else {
 							$scope.players.push(ret.data.result);
 						}
-						//$scope.SortList($scope.players, "initiative");
+						$http.get("/track/status").then(function(ret){
+							if (ret.data.success){
+								$scope.startInit = ret.data.start_init;
+								if ($scope.startInit){
+									$scope.curInitInd = ret.data.cur_init_ind;
+									$scope.players[$scope.curInitInd].isTurn = true;
+								}
+							}
+						});
 					}
 				});
 			}

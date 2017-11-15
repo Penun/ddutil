@@ -12,6 +12,7 @@
 		this.lastNote = 0;
 		$scope.charNameSug = "Name";
 		this.formInput = "";
+		$scope.isTurn = false;
 
 		this.AddChar = function(){
 			$scope.char.name = $scope.char.name.trim();
@@ -87,6 +88,10 @@
 					break;
 				case 6:
 					$scope.curChar.initiative = 0;
+					break;
+				case 7:
+				case 8:
+					$scope.isTurn = $scope.isTurn ? false : true;
 					break;
 				default:
 					return;
@@ -199,18 +204,19 @@
 			this.inpForm = {};
 		};
 
-		this.FocusKi = function(){
-			if ($scope.char.hasKi){
-				var charKi = document.getElementById("charKi");
-				charKi.focus();
+		this.EndTurn = function(){
+			if (!$scope.isTurn){
+				return;
 			}
-		};
-
-		this.FocusSpell = function(){
-			if ($scope.char.hasSpells){
-				var charSp = document.getElementById("charSpe1");
-				charSp.focus();
-			}
+			$scope.isTurn = false;
+			var sendData = {
+				type: "initiative_t",
+				data: {
+					message: "+"
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
 		};
 
 		this.ShowStep = function(step){

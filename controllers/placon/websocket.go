@@ -20,6 +20,12 @@ type GetSubsResp struct {
     Result []*sockets.Player `json:"result"`
 }
 
+type GetStatusResp struct {
+	Success bool `json:"success"`
+	StartInit bool `json:"start_init"`
+	CurInitInd int `json:"cur_init_ind"`
+}
+
 type ControllerReq struct {
 	Type string `json:"type"`
 	Data MultiMess `json:"data"`
@@ -47,6 +53,7 @@ var (
 	players = make([]*sockets.Player, 0)
 	master = false
 	curInitInd = 0
+	prevInitInd = 0
 	initStarted = false
 )
 
@@ -134,6 +141,13 @@ func (this *WebSocketController) Join() {
 				curPlay.Initiative = init
 				go SortPlayerInit()
 				publish <- newEvent(sockets.EVENT_INIT, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
+			case "initiative_t":
+				if curInitInd == len(players) - 1 {
+					curInitInd = 0
+				} else {
+					curInitInd++
+				}
+				publish <- newEvent(sockets.EVENT_INIT_T, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			}
 		} else {
 			beego.Error(err.Error())
@@ -210,14 +224,23 @@ func (this *WebSocketController) JoinM() {
 					initStarted = false
 				} else {
 					initStarted = true
+					curInitInd = 0
 				}
-				curInitInd = 0
 				publish <- newEvent(sockets.EVENT_INIT_S, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			case "initiative_t":
+				prevInitInd = curInitInd
 				if conReq.Data.Message == "+" {
-					curInitInd++
+					if curInitInd == len(players) - 1 {
+						curInitInd = 0
+					} else {
+						curInitInd++
+					}
 				} else {
-					curInitInd--
+					if curInitInd == 0 {
+						curInitInd = len(players) - 1
+					} else {
+						curInitInd--
+					}
 				}
 				publish <- newEvent(sockets.EVENT_INIT_T, uname, ws_type, conReq.Data.Players, conReq.Data.Message)
 			}
@@ -238,6 +261,12 @@ func (this *WebSocketController) Subs() {
 		tempPlay := sockets.Player{Name: "DM"}
 		resp.Result = append(resp.Result, &tempPlay)
 	}
+	this.Data["json"] = resp
+	this.ServeJSON()
+}
+
+func (this *WebSocketController) GameStatus() {
+	resp := GetStatusResp{true, initStarted, curInitInd}
 	this.Data["json"] = resp
 	this.ServeJSON()
 }
@@ -280,6 +309,10 @@ func broadcastWebSocket(event sockets.Event) {
 			}
 		case sockets.EVENT_INIT_T:
 			if watch {
+				send = true
+			} else if players[curInitInd].Name == subscribers[i].Name {
+				send = true
+			} else if event.Sender.Type == "master" && players[prevInitInd].Name == subscribers[i].Name {
 				send = true
 			}
 		}
