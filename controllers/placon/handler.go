@@ -15,12 +15,6 @@ type Subscriber struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Conn *websocket.Conn `json:"conn"`
-	Stats StatBlock `json:"stat_block"` //Only fo players otherwise nil
-}
-
-type StatBlock struct {
-	HP int `json:"hp"`
-	Initiative int `json:"initiative"`
 }
 
 var (
@@ -76,11 +70,11 @@ func init() {
 }
 
 func newEvent(ep sockets.EventType, user string, ws_type string, targets []string, data string) sockets.Event {
-	return sockets.Event{ep, sockets.Player{user, ws_type}, targets, data}
+	return sockets.Event{ep, sockets.Sender{user, ws_type}, targets, data}
 }
 
 func Join(user string, ws_type string, ws *websocket.Conn) {
-	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws, Stats: StatBlock{}}
+	subscribe <- Subscriber{Name: user, Type: ws_type, Conn: ws}
 }
 
 func Leave(user string) {

@@ -4,9 +4,9 @@
 		<div class="page sc_back">
 			<div id="menu" class="sixty_he" ng-show="mCont.ShowStep(0)">
 				<ul>
-					<li class="clickable" ng-click="SetStep(backStep, false)">Close</li>
 					<li class="clickable" ng-click="SetStep(3, true)">Note</li>
 					<li class="clickable" ng-click="SetStep(2, true)">Stats</li>
+					<li class="clickable" ng-click="SetStep(backStep, false)">Cancel</li>
 				</ul>
 			</div>
 			<div ng-show="mCont.ShowStep(10)" class="sixty_he">
@@ -36,6 +36,7 @@
                 <p class="s_ws_p_inline"><label><b>{{"{{char.name}}"}}</b></label></p>
                 <p class="s_ws_p_inline"><label><b>Initiative:</b></label> {{"{{curChar.initiative}}"}} <button ng-show="curChar.initiative == 0" ng-click="mCont.InputSet('Initiative')" class="inline_butt">Set</button></p>
                 <p class="s_ws_p_inline"><label><b>HP:</b></label> {{"{{curChar.hp}}"}} <button ng-click="mCont.InputSet('Damage')" class="inline_butt">-</button></p>
+                <p class="s_ws_p_inline"><button ng-click="mCont.EndTurn()" ng-show="isTurn">End Turn</button></p>
             </div>
 			<div ng-show="mCont.ShowStep(3)" class="sixty_he">
 				<p class="s_ws_p_inline"><button ng-click="SetStep(0, false)">Menu</button></p>

@@ -12,6 +12,7 @@
 		this.lastNote = 0;
 		$scope.charNameSug = "Name";
 		this.formInput = "";
+		$scope.isTurn = false;
 
 		this.AddChar = function(){
 			$scope.char.name = $scope.char.name.trim();
@@ -35,7 +36,7 @@
 		this.SetupSocket = function(){
 			if ($scope.sock.readyState === 1){
 				$scope.sock.onmessage = $scope.HandleMessage;
-				$http.get("/track/subs").then(function(ret){
+				$http.get("/track/subs?type=play").then(function(ret){
 					if (ret.data.success){
 						for (var i = 0; i < ret.data.result.length; i++){
 							if (ret.data.result[i].name == $scope.char.name){
@@ -88,6 +89,10 @@
 				case 6:
 					$scope.curChar.initiative = 0;
 					break;
+				case 7:
+				case 8:
+					$scope.isTurn = $scope.isTurn ? false : true;
+					break;
 				default:
 					return;
 			}
@@ -123,7 +128,7 @@
 			$scope.sock.send(sendData);
 			this.lastNote = Date.now();
 			$scope.note = {};
-			$scope.SetStep(2);
+			$scope.SetStep(2, true);
 		};
 
 		this.ReadNote = function(){
@@ -199,18 +204,19 @@
 			this.inpForm = {};
 		};
 
-		this.FocusKi = function(){
-			if ($scope.char.hasKi){
-				var charKi = document.getElementById("charKi");
-				charKi.focus();
+		this.EndTurn = function(){
+			if (!$scope.isTurn){
+				return;
 			}
-		};
-
-		this.FocusSpell = function(){
-			if ($scope.char.hasSpells){
-				var charSp = document.getElementById("charSpe1");
-				charSp.focus();
-			}
+			$scope.isTurn = false;
+			var sendData = {
+				type: "initiative_t",
+				data: {
+					message: "+"
+				}
+			};
+			sendData = JSON.stringify(sendData);
+			$scope.sock.send(sendData);
 		};
 
 		this.ShowStep = function(step){

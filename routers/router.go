@@ -17,5 +17,7 @@ func init() {
 	beego.Router("/track/watch", &placon.WebSocketController{}, "get:Watch")
 	beego.Router("/track/master", &placon.WebSocketController{}, "get:Master")
 	beego.Router("/track/subs", &placon.WebSocketController{}, "get:Subs")
+	beego.Router("/track/status", &placon.WebSocketController{}, "get:GameStatus")
 	beego.Router("/track/join", &placon.WebSocketController{}, "get:Join")
+	beego.Router("/track/joinm", &placon.WebSocketController{}, "get:JoinM")
 }
